@@ -22,7 +22,7 @@ class LockCommand extends Command {
             trigger: 'lockmessage',
             description: 'Sends the lock info for trading and advises using /trade.',
             type: 'ChatInput',
-            module: 'admin',
+            module: 'trading',
         });
     }
 

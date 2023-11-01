@@ -25,7 +25,7 @@ class ActivitycheckCommand extends Command {
             trigger: 'activitycheck',
             description: 'Announced the activity check.',
             type: 'ChatInput',
-            module: 'moderation',
+            module: 'admin',
             args: [],
             permissions: [
                 {

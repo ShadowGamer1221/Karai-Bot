@@ -16,7 +16,7 @@ class TradeCommand extends Command {
             trigger: 'trade',
             description: 'Sends a trade request into #trading',
             type: 'ChatInput',
-            module: 'admin',
+            module: 'trading',
             args: [
                 {
                     trigger: 'item',

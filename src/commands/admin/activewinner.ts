@@ -28,7 +28,7 @@ class ActivewinnerCommand extends Command {
             trigger: 'activewinner',
             description: 'Announced the activity check winner.',
             type: 'ChatInput',
-            module: 'moderation',
+            module: 'admin',
             args: [
               {
                     trigger: 'member',
