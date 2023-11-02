@@ -57,7 +57,12 @@ class ClanAcceptCommand extends Command {
         mention = mention.replace(">","");
         console.log(mention)
         const userId = mention; // Replace with the actual user's ID
-        const userToAccept = await discordClient.users.fetch(userId); 
+        const userToAccept = await discordClient.users.fetch(userId);
+
+        const guild = ctx.guild;
+        const member = guild.members.cache.get(userId);
+
+        const role = guild.roles.cache.find(role => role.id === "1057796072531042374");
 
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1168628274759471155') as TextChannel;
@@ -71,6 +76,7 @@ class ClanAcceptCommand extends Command {
         .setTimestamp();
 
         const logs = await channelSend.send({ embeds: [logEmbed] });
+        member.roles.add(role);
 
 
         // Send a DM to the user
