@@ -26,7 +26,7 @@ class DmCommand extends Command {
             trigger: 'dm',
             description: 'DMs others using the bot.',
             type: 'ChatInput',
-            module: 'utillity',
+            module: 'admin',
             args: [
                 {
                     trigger: 'member',

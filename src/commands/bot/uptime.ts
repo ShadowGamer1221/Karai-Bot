@@ -18,7 +18,7 @@ class UptimeCommand extends Command {
             trigger: 'uptime',
             description: 'Gets the uptime of the bot',
             type: 'ChatInput',
-            module: 'utillity',
+            module: 'bot',
             args: [],
             permissions: [
                 {

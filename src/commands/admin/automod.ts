@@ -81,7 +81,7 @@ class AutoModerationCommand extends Command {
 
 discordClient.on('messageCreate', async (message) => {
     if (autoModerationEnabled) {
-        const keywordsToBlock = ['fuck', 'fek', 'fucking', 'nigger', 'n1gger', 'niger', 'n1ger', 'dumbass', 'dumb ass', 'fucking idiot', 'scumbag', 'cum', 'scum bag', 'scum', 'neger'];
+        const keywordsToBlock = process.env.BAD_WORDS;
         const content = message.content.toLowerCase();
 
         for (const keyword of keywordsToBlock) {
