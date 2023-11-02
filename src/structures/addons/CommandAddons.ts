@@ -7,6 +7,7 @@ import {
     GuildMember,
     BaseInteraction,
     MessageCreateOptions,
+    TextChannel,
 } from 'discord.js';
 import { Command } from '../Command';
 import { Args } from 'lexure';
@@ -23,7 +24,7 @@ export class CommandContext  {
     replied: boolean;
     deferred: boolean;
     command: Command;
-    channel: any;
+    channel: TextChannel | null;
 
     /**
      * Command context for getting usage information and replying.
@@ -37,6 +38,7 @@ export class CommandContext  {
         this.member = payload.member as GuildMember;
         this.guild = payload.guild;
         this.command = new command();
+        this.channel = payload.channel as TextChannel;
         this.replied = false;
         this.deferred = false;
 
