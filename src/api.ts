@@ -1,6 +1,5 @@
 import express from 'express';
 import { config } from './config';
-import { provider } from './database';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
 const app = express();
