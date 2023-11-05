@@ -23,7 +23,7 @@ export const config: BotConfig = {
         moderators: ['872620422552748123', '872396254104141864', '872400335954640956']
     },
     logChannels: {
-        actions: '',
+        actions: '1170647793141026836',
         shout: '',
     },
  

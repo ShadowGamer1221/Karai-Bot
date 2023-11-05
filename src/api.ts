@@ -4,6 +4,8 @@ import { provider } from './database';
 import { logAction } from './handlers/handleLogging';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
+import { EmbedBuilder, TextChannel } from 'discord.js';
+import { discordClient } from './main';
 const app = express();
 require('dotenv').config();
 
@@ -37,10 +39,16 @@ app.post('/stock', async (req, res) => {
     try {
 
         logAction('Add Stock', 'API Action', null, null, null, null, `${amount} → ${amount} (+${Number(amount)})`);
+        const embed = new EmbedBuilder()
+        .setDescription(`**Stock Added**\n\n**Amount:** ${amount}`)
+
+        let channelSend: TextChannel;
+        channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+        channelSend.send({ embeds: [embed] })
 
         return res.send({ success: true });
     } catch (err) {
-        return res.send({ success: false, msg: 'Failed to add xp.' });
+        return res.send({ success: false, msg: 'Failed to add stock.' });
     }
 });
 
