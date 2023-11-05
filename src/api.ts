@@ -6,6 +6,7 @@ import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { discordClient } from './main';
+import { infoIconUrl, mainColor } from './handlers/locale';
 const app = express();
 require('dotenv').config();
 
@@ -38,9 +39,11 @@ app.post('/stock', async (req, res) => {
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
     try {
 
-        logAction('Add Stock', 'API Action', null, null, null, null, `${amount} → ${amount} (+${Number(amount)})`);
         const embed = new EmbedBuilder()
-        .setDescription(`**Stock Added**\n\n**Amount:** ${amount}`)
+        .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
+        .setColor(mainColor)
+        .setDescription(`${amount}`)
+        .setTimestamp();
 
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
