@@ -1,5 +1,7 @@
 import express from 'express';
 import { config } from './config';
+import { provider } from './database';
+import { logAction } from './handlers/handleLogging';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
 const app = express();
@@ -28,6 +30,19 @@ const addSignal = (signal) => {
         signal,
     });
 }
+
+app.post('/stock', async (req, res) => {
+    const { amount } = req.body;
+    if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
+    try {
+
+        logAction('Add Stock', 'API Action', null, null, null, null, `${amount} → ${amount} (+${Number(amount)})`);
+
+        return res.send({ success: true });
+    } catch (err) {
+        return res.send({ success: false, msg: 'Failed to add xp.' });
+    }
+});
 
 if(config.api) {
     app.use((req, res, next) => {

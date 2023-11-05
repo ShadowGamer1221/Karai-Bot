@@ -69,6 +69,28 @@ export const getInvalidRobloxUserEmbed = (): EmbedBuilder => {
     return embed;
 }
 
+export const getLogEmbed = async (action: string, moderator: DiscordUser | User | GroupMember | any, reason?: string, target?: User | PartialUser, rankChange?: string, endDate?: Date, body?: string, xpChange?: string): Promise<EmbedBuilder> => {
+    if(target && !target.name) target = null;
+    
+    const embed = new EmbedBuilder()
+        .setColor(mainColor)
+        .setTimestamp()
+        .setDescription(`**Action:** ${action}\n${target ? `**Target:** ${target.name} (${target.id})\n` : ''}${rankChange ? `**Rank Change:** ${rankChange}\n` : ''}${xpChange ? `**XP Change:** ${xpChange}\n` : ''}${endDate ? `**Duration:** <t:${Math.round(endDate.getTime() / 1000)}:R>\n` : ''}${reason ? `**Reason:** ${reason}\n` : ''}${body ? `**Body:** ${body}\n` : ''}`);
+
+    if(typeof moderator === 'string') {
+        embed.setAuthor({ name: moderator });
+    } else {
+        if(moderator instanceof DiscordUser) {
+            embed.setAuthor({ name: moderator.username, iconURL: moderator.displayAvatarURL() });
+            embed.setFooter({ text: `Moderator ID: ${moderator.id}` });
+        } else {
+            embed.setAuthor({ name: moderator.username });
+        }
+    }
+
+    return embed;
+}
+
 export const getCommandEmbedByModule = (modules: { [key: string]: Command[] }, module: string): EmbedBuilder => {
     let formattedModuleString = module.replace('-', ' ').split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     let commands: Command[] = modules[module];
