@@ -41,7 +41,24 @@ app.post('/stock', async (req, res) => {
         const receivedMessage = amount;
 
         const emojiMap = {
-            'Spike': '<:Spike:1155449245244084275>',
+            'Spike': '<:kr_Spike:1171135471284408420>',
+            'Clear': '<:kr_Clear:1056146153432944691>',
+            'Chop':  '<:kr_Chop:1171135528943484999>',
+            'Bomb': '<:kr_Bomb:1171135637903126620> ',
+            'Barrier': '<:Barrier:1056145863145177098>',
+            'String': '<:kr_String:1056146220856397874>',
+            'Paw': '<:kr_Paw:1171135565945655377>',
+            'Sand': '<:kr_Sand:1056146192603553832>',
+            'Smoke': '<:kr_smoke:1171135549269098570>',
+            'Buddha': '<:kr_Buddha:1171135448672907296>',
+            'Mammoth': '<:kr_Mammoth:1171135612900880447>',
+            'Snow': '<:kr_Snow:1171135582458617956>',
+            'Electricity': '<:kr_Electricity:1056146319401549904>',
+            'Gas': '<:kr_Gas:1171137646903435364>',
+            'Magnet': '<:kr_magnet:1171137673721819146>',
+            'venom': '<:venom:1071257298015629382>',
+            'Gum': '<:kr_Gum:1171136697728241755>',
+            'Phoenix': '<:kr_Phoenix:1171138936664498196>',
         };
 
         const replaceMessage = receivedMessage.replace(/\[([^\]]+)]/g, (match, name) => {
