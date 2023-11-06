@@ -42,62 +42,7 @@ export const config: BotConfig = {
      xpSystem: {
         enabled: true,
         autoRankup: false,
-        roles: [
-            
-            {
-                rank: 18,
-                xp: 10000,
-            },
-            {
-                rank: 17,
-                xp: 9000,
-            },
-            {
-                rank: 16,
-                xp: 8000,
-            },
-            {
-                rank: 15,
-                xp: 7000,
-            },
-            {
-                rank: 14,
-                xp: 6000,
-            },
-            {
-                rank: 13,
-                xp: 5000,
-            },
-            {
-                rank: 12,
-                xp: 3000,
-            },
-            {
-                rank: 11,
-                xp: 2000,
-            },
-            {
-                rank: 10,
-                xp: 1500,
-            },
-            {
-                rank: 9,
-                xp: 900,
-            },
-            {
-                rank: 8,
-                xp: 500,
-            },
-            {
-                rank: 7,
-                xp: 200,
-            },
-            {
-                rank: 6,
-                xp: 100,
-            },
-            
-        ],
+        roles: [],
     },
     antiAbuse: {
         enabled: false,

@@ -38,16 +38,47 @@ app.post('/stock', async (req, res) => {
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
     try {
+        const receivedMessage = amount;
+
+        const emojiMap = {
+            'Spike': '<:Spike:1155449245244084275>',
+        };
+
+        const replaceMessage = receivedMessage.replace(/\[([^\]]+)]/g, (match, name) => {
+            const emoji = emojiMap[name];
+            return emoji ? emoji : match;
+        });
 
         const embed = new EmbedBuilder()
         .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
         .setColor(mainColor)
-        .setDescription(`${amount}`)
+        .setDescription(`${replaceMessage}`)
         .setTimestamp();
 
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
         channelSend.send({ embeds: [embed] })
+
+        return res.send({ success: true });
+    } catch (err) {
+        return res.send({ success: false, msg: 'Failed to add stock.' });
+    }
+});
+
+app.post('/kick', async (req, res) => {
+    const { userId } = req.body;
+    if(!userId) return res.send({ success: false, msg: 'Missing parameters.' });
+    try {
+
+        const logEmbed = new EmbedBuilder()
+        .setAuthor({ name: 'Karai API Action', iconURL: infoIconUrl })
+        .setColor(mainColor)
+        .setDescription(`**Action:** Kick\n**User:** <@${userId}>`)
+        .setTimestamp();
+
+        let channelSend: TextChannel;
+        channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+        channelSend.send({ embeds: [logEmbed] })
 
         return res.send({ success: true });
     } catch (err) {
