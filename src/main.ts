@@ -61,5 +61,18 @@ const botChannelId = '1137703394048491520';
         }
     });
 
+    discordClient.on('interactionCreate', async (interaction) => {
+        if (!interaction.isButton()) return;
+    
+        if (interaction.customId === 'accept_trade') {
+            // Handle the "Accept Trade" button click
+            const userWhoClicked = interaction.user;
+            const tradeRequestUser = interaction.message.embeds[0].fields[0].value;
+    
+            // Send a direct message to the user who used the /trade command
+            userWhoClicked.send(`User ${tradeRequestUser} wants to accept your trade offer.`);
+        }
+    });
+
 // [Module]
 export { discordClient };

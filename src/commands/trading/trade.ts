@@ -1,5 +1,5 @@
 import { discordClient } from '../../main';
-import { EmbedBuilder, TextChannel } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, EmbedBuilder, TextChannel } from 'discord.js';
 import { CommandContext } from '../../structures/addons/CommandAddons';
 import { Command } from '../../structures/Command';
 import { config } from '../../config';
@@ -48,8 +48,8 @@ class TradeCommand extends Command {
                     type: 'role',
                     ids: config.permissions.verified,
                     value: true,
-                }
-            ]
+                },
+            ],
         });
     }
 
@@ -59,7 +59,7 @@ class TradeCommand extends Command {
 
         try {
             // Fetch the trading channel by its ID
-            channelSend = await discordClient.channels.fetch('1059790913989267547') as TextChannel;
+            channelSend = await discordClient.channels.fetch('1168601617524854824') as TextChannel;
         } catch (error) {
             console.error(error);
             return ctx.reply({ content: 'The trading channel is not accessible or does not exist.' });
@@ -82,8 +82,21 @@ class TradeCommand extends Command {
                 { name: 'Amount Needed', value: amountNeeded.toString(), inline: true },
             ]);
 
-        // Send the trade request embed to the trading channel
-        channelSend.send({ embeds: [tradeRequestEmbed] });
+        // Create an "Accept Trade" button
+        const acceptButton = new ButtonBuilder()
+            .setCustomId('accept_trade')
+            .setLabel('Accept Trade')
+            .setStyle(ButtonStyle.Success);
+
+        // Send the trade request embed with the "Accept Trade" button to the trading channel
+        channelSend.send({ embeds: [tradeRequestEmbed], components: [
+            {
+                type: 1,
+                components: [
+                    acceptButton,
+                ],
+            },
+        ], });
 
         // Send a success message to the user
         const successEmbed = new EmbedBuilder()
