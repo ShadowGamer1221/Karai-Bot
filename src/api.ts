@@ -41,7 +41,7 @@ app.post('/stock', async (req, res) => {
         const receivedMessage = amount;
 
         const emojiMap = {
-            'Current Stock:': '',
+            'Current Stock:': ' ',
             'Spike': '<:kr_Spike:1171135471284408420>',
             'Spin':  '<:kr_spin:1171141225257123971>',
             'Clear': '<:kr_Clear:1056146153432944691>',
