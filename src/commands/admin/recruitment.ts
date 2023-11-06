@@ -54,7 +54,7 @@ class RecruitementCommand extends Command {
         const requirementsEmbed = new EmbedBuilder()
         .setAuthor({ name:`Requirements`, iconURL: infoIconUrl })
         .setColor(mainColor)
-        .setDescription(`- **💰 Minimum Bounty:** Your character should have a minimum of 250,000 Bounty, proving your commitment and resourcefulness in the game.\n\n- **📈 Max Level (3150):** We require all members to have reached the impressive level of 3150, demonstrating their in-game expertise.\n\n- **💪 Active Participation:** We thrive on active engagement, so stay involved, share your experiences, and enjoy the camaraderie with fellow members.`)
+        .setDescription(`- **💰 Minimum Bounty:** Your character should have a minimum of 500,000 Bounty, proving your commitment and resourcefulness in the game.\n\n- **📈 Max Level (3150):** We require all members to have reached the impressive level of 3150, demonstrating their in-game expertise.\n\n- **💪 Active Participation:** We thrive on active engagement, so stay involved, share your experiences, and enjoy the camaraderie with fellow members.`)
         .setFooter({ text: `Join us and be a part of this exciting journey! 🎮🕐💬` })
         .setTimestamp();
 

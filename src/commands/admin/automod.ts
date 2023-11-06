@@ -81,7 +81,7 @@ class AutoModerationCommand extends Command {
 
 discordClient.on('messageCreate', async (message) => {
     if (autoModerationEnabled) {
-        const keywordsToBlock = process.env.BAD_WORDS;
+        const keywordsToBlock = process.env.BAD_WORDS.split(',');
         const content = message.content.toLowerCase();
 
         for (const keyword of keywordsToBlock) {
