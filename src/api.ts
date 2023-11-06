@@ -41,7 +41,9 @@ app.post('/stock', async (req, res) => {
         const receivedMessage = amount;
 
         const emojiMap = {
+            'Current Stock:': '',
             'Spike': '<:kr_Spike:1171135471284408420>',
+            'Spin':  '<:kr_spin:1171141225257123971>',
             'Clear': '<:kr_Clear:1056146153432944691>',
             'Chop':  '<:kr_Chop:1171135528943484999>',
             'Bomb': '<:kr_Bomb:1171135637903126620> ',
@@ -59,6 +61,18 @@ app.post('/stock', async (req, res) => {
             'venom': '<:venom:1071257298015629382>',
             'Gum': '<:kr_Gum:1171136697728241755>',
             'Phoenix': '<:kr_Phoenix:1171138936664498196>',
+            'Dough': '<:kr_Dough:1056146125985435698>',
+            'Flame': '<:kr_Flame:1056146107631153172>',
+            'Gravity': '<:kr_Gravity:1056145836658147388>',
+            'Ice': '<:kr_Ice:1056145990970769438>',
+            'Magma': '<:kr_Magma:1056148368507797554>',
+            'Light': '<:kr_Light:1056146172839997450>',
+            'Operation': '<:kr_Operation:1056146276984553482>',
+            'Tremor': '<:kr_Tremor:1056145903372730388>',
+            'Darkness': '<:kr_Darkness:1056145805209247814>',
+            'Shadow': '<:kr_shadow:1171135428326342729>',
+            'Dragon': '<:kr_dragon:1171136763427831918>',
+            'Venom': '<:kr_venom:1171137731125059596>',
         };
 
         const replaceMessage = receivedMessage.replace(/\[([^\]]+)]/g, (match, name) => {
@@ -82,26 +96,6 @@ app.post('/stock', async (req, res) => {
     }
 });
 
-app.post('/kick', async (req, res) => {
-    const { userId } = req.body;
-    if(!userId) return res.send({ success: false, msg: 'Missing parameters.' });
-    try {
-
-        const logEmbed = new EmbedBuilder()
-        .setAuthor({ name: 'Karai API Action', iconURL: infoIconUrl })
-        .setColor(mainColor)
-        .setDescription(`**Action:** Kick\n**User:** <@${userId}>`)
-        .setTimestamp();
-
-        let channelSend: TextChannel;
-        channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
-        channelSend.send({ embeds: [logEmbed] })
-
-        return res.send({ success: true });
-    } catch (err) {
-        return res.send({ success: false, msg: 'Failed to add stock.' });
-    }
-});
 
 if(config.api) {
     app.use((req, res, next) => {
