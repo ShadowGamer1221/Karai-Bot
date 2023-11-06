@@ -94,7 +94,7 @@ discordClient.on('messageCreate', async (message) => {
                 const logEmbed = new EmbedBuilder()
                 .setAuthor({ name: `Auto-Moderation Action`, iconURL: infoIconUrl})
                 .setColor(mainColor)
-                .setDescription(`**User:** <@${message.author.id}>\n**Action:** Message Removed\n**Content:** ${content}`)
+                .setDescription(`**User:** <@${message.author.id}>\n**Action:** Message Removed\n**Reason:** Inappropriate Content`)
                 .setTimestamp();
                 channelSend.send({ embeds: [logEmbed] })
                 
