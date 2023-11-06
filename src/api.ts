@@ -87,7 +87,7 @@ app.post('/stock', async (req, res) => {
         .setTimestamp();
 
         let channelSend: TextChannel;
-        channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+        channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
         channelSend.send({ embeds: [embed] })
 
         return res.send({ success: true });
