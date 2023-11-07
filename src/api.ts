@@ -53,7 +53,12 @@ app.post('/stock', async (req, res) => {
                 const channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
 
                 // Send a message to ping the role
-                await channelSend.send(`<@&${roleToPing.id}>`);
+                await channelSend.send({ 
+                    content: `<@&${roleToPing.id}>`,
+                    allowedMentions: {
+                        roles: [roleToPing.id],
+                    },
+                });
             }
         } catch (err) {
             console.error('Error pinging the role:', err);
@@ -112,11 +117,12 @@ app.post('/stock', async (req, res) => {
         const embed = new EmbedBuilder()
             .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
             .setColor(mainColor)
-            .setDescription(`${replaceMessage}`)
+            .setDescription(`${infoIconUrl} ${replaceMessage}`)
+            .setFooter({ text: `Stock added by ${req.body.user}` })
             .setTimestamp();
 
         let channelSend: TextChannel;
-        channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
+        channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
         channelSend.send({ embeds: [embed] });
         const message = channelSend.lastMessage;
 
