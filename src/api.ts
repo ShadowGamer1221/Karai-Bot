@@ -88,7 +88,8 @@ app.post('/stock', async (req, res) => {
 
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
-        const message = await channelSend.send({ embeds: [embed] });
+        channelSend.send({ embeds: [embed] });
+        const message = channelSend.lastMessage;
 
         try {
             await message.crosspost();
