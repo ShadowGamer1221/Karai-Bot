@@ -99,8 +99,8 @@ app.post('/stock', async (req, res) => {
         const embed = new EmbedBuilder()
             .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
             .setColor(mainColor)
-            .setDescription(`${replaceMessage}`)
-            .setFooter({ text: `Next stock drop ${timeString}` })
+            .setDescription(`${replaceMessage}\n\nNext stock drop ${timeString}`)
+            .setFooter({ text: `.gg/karai` })
             .setTimestamp();
 
         let channelSend: TextChannel;
