@@ -10,6 +10,8 @@ import { infoIconUrl, mainColor } from './handlers/locale';
 const app = express();
 require('dotenv').config();
 
+let isCooldownActive = false;
+
 let signals = [];
 app.use(express.json());
 
@@ -35,16 +37,19 @@ const addSignal = (signal) => {
 }
 
 app.post('/stock', async (req, res) => {
-    let lastRequestTime = 0; // Initialize the last request time to 0
-    const requestCooldown = 5 * 60 * 1000; // 5 minutes in milliseconds
-    
-    const currentTime = Date.now();
-    if (currentTime - lastRequestTime < requestCooldown) {
-        // Reject the request if the cooldown hasn't passed
-        return res.send({ success: false, msg: 'Request cooldown in effect' });
+    if (isCooldownActive) {
+        return res.status(429).send({ success: false, msg: 'Request cooldown in effect' });
     }
+    
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
+
+    isCooldownActive = true;
+
+    setTimeout(() => {
+        isCooldownActive = false;
+    }, 5 * 60 * 1000); // Set the cooldown to 5 minutes (5 * 60 * 1000 milliseconds)
+
     try {
         const receivedMessage = amount;
 
