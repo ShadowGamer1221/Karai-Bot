@@ -4,7 +4,7 @@ import { provider } from './database';
 import { logAction } from './handlers/handleLogging';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
-import { EmbedBuilder, TextChannel } from 'discord.js';
+import { EmbedBuilder, TextChannel, time } from 'discord.js';
 import { discordClient } from './main';
 import { infoIconUrl, mainColor } from './handlers/locale';
 const app = express();
@@ -93,14 +93,14 @@ app.post('/stock', async (req, res) => {
             return emoji ? emoji : match;
         });
 
-        const timestamp = new Date();
-        timestamp.setHours(timestamp.getHours() + 2);
+        const nextStockDrop = new Date(Date.now() + ms('2h'));
+        const timeString = time(nextStockDrop, 'R');
 
         const embed = new EmbedBuilder()
             .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
             .setColor(mainColor)
             .setDescription(`${replaceMessage}`)
-            .setFooter({ text: `${timestamp.toLocaleTimeString('en-US', { timeStyle: 'short' })}` })
+            .setFooter({ text: `Next stock drop ${timeString}` })
             .setTimestamp();
 
         let channelSend: TextChannel;
