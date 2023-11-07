@@ -44,6 +44,22 @@ app.post('/stock', async (req, res) => {
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
 
+    if (amount.includes('legendary')) {
+        // If the content contains "Legendary," ping the role with the specified ID
+        try {
+            const roleToPingId = '852584030401462292';
+            const roleToPing = await discordClient.guilds.cache.get('872395463368769576')?.roles.fetch(roleToPingId);
+            if (roleToPing) {
+                const channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
+
+                // Send a message to ping the role
+                await channelSend.send(`<@&${roleToPing.id}>`);
+            }
+        } catch (err) {
+            console.error('Error pinging the role:', err);
+        }
+    }
+
     isCooldownActive = true;
 
     setTimeout(() => {
