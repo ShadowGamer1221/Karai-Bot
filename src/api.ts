@@ -48,7 +48,7 @@ app.post('/stock', async (req, res) => {
 
     setTimeout(() => {
         isCooldownActive = false;
-    }, 1 * 60 * 1000); // Set the cooldown to 5 minutes (5 * 60 * 1000 milliseconds)
+    }, 5 * 60 * 1000); // Set the cooldown to 5 minutes (5 * 60 * 1000 milliseconds)
 
     try {
         const receivedMessage = amount;
