@@ -93,13 +93,14 @@ app.post('/stock', async (req, res) => {
             return emoji ? emoji : match;
         });
 
-        const nextStock = ms('180m');
+        const timestamp = new Date();
+        timestamp.setHours(timestamp.getHours() + 2);
 
         const embed = new EmbedBuilder()
             .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
             .setColor(mainColor)
             .setDescription(`${replaceMessage}`)
-            .setFooter({ text: `Next stock in ${nextStock}` })
+            .setFooter({ text: `${timestamp.toLocaleTimeString('en-US', { timeStyle: 'short' })}` })
             .setTimestamp();
 
         let channelSend: TextChannel;
