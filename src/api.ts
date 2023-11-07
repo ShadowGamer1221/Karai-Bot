@@ -40,7 +40,7 @@ app.post('/stock', async (req, res) => {
     if (isCooldownActive) {
         return res.status(429).send({ success: false, msg: 'Request cooldown in effect' });
     }
-    
+
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
 
@@ -48,7 +48,7 @@ app.post('/stock', async (req, res) => {
 
     setTimeout(() => {
         isCooldownActive = false;
-    }, 5 * 60 * 1000); // Set the cooldown to 5 minutes (5 * 60 * 1000 milliseconds)
+    }, 1 * 60 * 1000); // Set the cooldown to 5 minutes (5 * 60 * 1000 milliseconds)
 
     try {
         const receivedMessage = amount;
