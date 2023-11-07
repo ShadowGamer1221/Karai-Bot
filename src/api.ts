@@ -81,14 +81,20 @@ app.post('/stock', async (req, res) => {
         });
 
         const embed = new EmbedBuilder()
-        .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
-        .setColor(mainColor)
-        .setDescription(`${replaceMessage}`)
-        .setTimestamp();
+            .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
+            .setColor(mainColor)
+            .setDescription(`${replaceMessage}`)
+            .setTimestamp();
 
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
-        channelSend.send({ embeds: [embed] })
+        const message = await channelSend.send({ embeds: [embed] });
+
+        try {
+            await message.crosspost();
+        } catch (err) {
+            console.log(err);
+        }
 
         return res.send({ success: true });
     } catch (err) {
