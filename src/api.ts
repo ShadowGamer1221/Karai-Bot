@@ -122,6 +122,20 @@ app.post('/stock', async (req, res) => {
             }
         }
 
+        if (amount.includes('Mythic')) {
+            const role = '1168632726052679690';
+            if (role) {
+                let channelSend: TextChannel;
+                channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+                channelSend.send({ 
+                    content: `<@&${role}>`,
+                    allowedMentions: {
+                        roles: [role],
+                    },
+            });
+            }
+        }
+
         try {
             await message.crosspost();
         } catch (err) {
