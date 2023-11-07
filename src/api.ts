@@ -44,21 +44,6 @@ app.post('/stock', async (req, res) => {
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
 
-    // Add a ping if the stock rarity is a Legendary
-    if (amount.includes('Legendary')) {
-        const role = '1168632726052679690';
-        if (role) {
-            let channelSend: TextChannel;
-            channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
-            channelSend.send({ 
-                content: `<@&${role}>`,
-                allowedMentions: {
-                    roles: [role],
-                },
-        });
-        }
-    }
-
     isCooldownActive = true;
 
     setTimeout(() => {
@@ -108,17 +93,33 @@ app.post('/stock', async (req, res) => {
             return emoji ? emoji : match;
         });
 
+        const nextStock = ms('180m');
+
         const embed = new EmbedBuilder()
             .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
             .setColor(mainColor)
             .setDescription(`${replaceMessage}`)
-            .setFooter({ text: `Next stock in 2 hours` })
+            .setFooter({ text: `Next stock in ${nextStock}` })
             .setTimestamp();
 
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
         channelSend.send({ embeds: [embed] });
         const message = channelSend.lastMessage;
+
+        if (amount.includes('Legendary')) {
+            const role = '1168632726052679690';
+            if (role) {
+                let channelSend: TextChannel;
+                channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+                channelSend.send({ 
+                    content: `<@&${role}>`,
+                    allowedMentions: {
+                        roles: [role],
+                    },
+            });
+            }
+        }
 
         try {
             await message.crosspost();
