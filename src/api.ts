@@ -44,22 +44,21 @@ app.post('/stock', async (req, res) => {
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
 
-const content = amount.toLowerCase(); // Convert the content to lowercase for case-insensitive matching
+    // Add a ping if the stock rarity is a Legendary
+    if (amount.includes('Legendary')) {
+        const role = '1168632726052679690';
+        if (role) {
+            const channel = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+            channel.send(`<@&${role}>`);
 
-    // Check if "Legendary" is present within square brackets
-    if (/\[Legendary\]/i.test(content)) {
-        // If "Legendary" is present, ping the role with the specified ID
-        try {
-            const roleToPingId = '1168632726052679690';
-            const roleToPing = await discordClient.guilds.cache.get('872395463368769576').roles.fetch(roleToPingId);
-            if (roleToPing) {
-                const channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
-
-                // Send a message to ping the role
-                await channelSend.send(`<@&${roleToPing.id}>`);
-            }
-        } catch (err) {
-            console.error('Error pinging the role:', err);
+            let channelSend: TextChannel;
+            channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+            channelSend.send({ 
+                content: `<@&${role}>`,
+                allowedMentions: {
+                    roles: [role],
+                },
+        });
         }
     }
 
