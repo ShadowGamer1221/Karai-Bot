@@ -104,15 +104,15 @@ app.post('/stock', async (req, res) => {
             .setTimestamp();
 
         let channelSend: TextChannel;
-        channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+        channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
         channelSend.send({ embeds: [embed] });
         const message = channelSend.lastMessage;
 
         if (amount.includes('Legendary')) {
-            const role = '1168632726052679690';
+            const role = '852584030401462292';
             if (role) {
                 let channelSend: TextChannel;
-                channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+                channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
                 channelSend.send({ 
                     content: `<@&${role}>`,
                     allowedMentions: {
@@ -123,10 +123,10 @@ app.post('/stock', async (req, res) => {
         }
 
         if (amount.includes('Mythic')) {
-            const role = '1168632726052679690';
+            const role = '852584030401462292';
             if (role) {
                 let channelSend: TextChannel;
-                channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
+                channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
                 channelSend.send({ 
                     content: `<@&${role}>`,
                     allowedMentions: {
