@@ -48,9 +48,6 @@ app.post('/stock', async (req, res) => {
     if (amount.includes('Legendary')) {
         const role = '1168632726052679690';
         if (role) {
-            const channel = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
-            channel.send(`<@&${role}>`);
-
             let channelSend: TextChannel;
             channelSend = await discordClient.channels.fetch('1170647793141026836') as TextChannel;
             channelSend.send({ 
@@ -114,8 +111,8 @@ app.post('/stock', async (req, res) => {
         const embed = new EmbedBuilder()
             .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
             .setColor(mainColor)
-            .setDescription(`${infoIconUrl} ${replaceMessage}`)
-            .setFooter({ text: `Stock added by ${req.body.user}` })
+            .setDescription(`${replaceMessage}`)
+            .setFooter({ text: `Next stock in 2 hours` })
             .setTimestamp();
 
         let channelSend: TextChannel;
