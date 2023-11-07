@@ -44,7 +44,9 @@ app.post('/stock', async (req, res) => {
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
 
-    if (amount.includes('Legendary')) {
+    const content = amount.toLowerCase();
+
+    if (content.includes('Legendary')) {
         // If the content contains "Legendary," ping the role with the specified ID
         try {
             const roleToPingId = '852584030401462292';
