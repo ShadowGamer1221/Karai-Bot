@@ -35,6 +35,14 @@ const addSignal = (signal) => {
 }
 
 app.post('/stock', async (req, res) => {
+    let lastRequestTime = 0; // Initialize the last request time to 0
+    const requestCooldown = 5 * 60 * 1000; // 5 minutes in milliseconds
+    
+    const currentTime = Date.now();
+    if (currentTime - lastRequestTime < requestCooldown) {
+        // Reject the request if the cooldown hasn't passed
+        return res.send({ success: false, msg: 'Request cooldown in effect' });
+    }
     const { amount } = req.body;
     if(!amount) return res.send({ success: false, msg: 'Missing parameters.' });
     try {
