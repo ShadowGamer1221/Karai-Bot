@@ -27,7 +27,7 @@ class QbotClient extends Client {
             console.log(welcomeText);
             if(this.application.botPublic) return console.log(securityText);
             console.log(startedText);
-            console.log(getListeningText(process.env.PORT || 3002));
+            console.log(getListeningText(process.env.PORT || 3001));
             this.loadCommands();
 
             if(config.activity.enabled) {

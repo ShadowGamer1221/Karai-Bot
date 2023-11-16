@@ -149,7 +149,7 @@ app.post('/stock', async (req, res) => {
 });
 
 app.post('/announce', async (req, res) => {
-    const { announce } = req.query;
+    const { announce } = req.body;
     if(!announce) return res.send({ success: false, msg: 'Missing parameters.' });
     try {
 
