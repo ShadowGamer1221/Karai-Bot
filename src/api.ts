@@ -151,7 +151,6 @@ app.post('/stock', async (req, res) => {
 
 if(config.api) {
     app.use((req, res, next) => {
-        if(!req.headers.authorization || req.headers.authorization !== process.env.API_KEY) return res.send({ success: false, msg: 'Unauthorized' });
         next();
     });
 }

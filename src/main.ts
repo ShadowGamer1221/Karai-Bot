@@ -9,7 +9,6 @@ require('dotenv').config();
 // [Ensure Setup]
 if(!process.env.ROBLOX_COOKIE) {
     console.error('ROBLOX_COOKIE is not set in the .env file.');
-    process.exit(1);
 }
 
 require('./api');
