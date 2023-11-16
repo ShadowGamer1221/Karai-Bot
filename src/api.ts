@@ -97,7 +97,7 @@ app.post('/stock', async (req, res) => {
         const timeString = time(nextStockDrop, 'R');
 
         const embed = new EmbedBuilder()
-            .setAuthor({ name: 'Current Stock', iconURL: infoIconUrl })
+            .setAuthor({ name: 'Stock Announcement', iconURL: infoIconUrl })
             .setColor(mainColor)
             .setDescription(`${replaceMessage}\n\nNext stock drop ${timeString}`)
             .setFooter({ text: `.gg/karai` })
@@ -145,6 +145,35 @@ app.post('/stock', async (req, res) => {
         return res.send({ success: true });
     } catch (err) {
         return res.send({ success: false, msg: 'Failed to add stock.' });
+    }
+});
+
+app.post('/announce', async (req, res) => {
+    const { announce } = req.query;
+    if(!announce) return res.send({ success: false, msg: 'Missing parameters.' });
+    try {
+
+        const embed = new EmbedBuilder()
+            .setAuthor({ name: 'Announcement', iconURL: infoIconUrl })
+            .setColor(mainColor)
+            .setDescription(`${announce}`)
+            .setFooter({ text: `.gg/karai` })
+            .setTimestamp();
+
+        let channelSend: TextChannel;
+        channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
+        channelSend.send({ embeds: [embed] });
+        const message = channelSend.lastMessage;
+
+        try {
+            await message.crosspost();
+        } catch (err) {
+            console.log(err);
+        }
+
+        return res.send({ success: true });
+    } catch (err) {
+        return res.send({ success: false, msg: 'Missing announcement string.' });
     }
 });
 
