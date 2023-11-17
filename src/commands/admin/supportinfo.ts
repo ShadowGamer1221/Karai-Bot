@@ -49,7 +49,7 @@ class SupportInfoCommand extends Command {
         const requirementsEmbed = new EmbedBuilder()
         .setAuthor({ name:`Support Information`, iconURL: infoIconUrl })
         .setColor(mainColor)
-        .setDescription(`🌟 **Need Assistance? We've Got You Covered!**\n\nIf you have questions, need help, or just want to chat, our support team is here to assist you every step of the way. Reach out to us using the \`/support\` command, and we'll respond promptly to ensure your experience is seamless and enjoyable.\n\n📌 **How to Use </support:1168608807363022897>:**\n\n- Simply type </support:1168608807363022897> followed by your question or issue in <#1168847322407501826>\n- Our dedicated support team is available 24/7 to provide you with the best assistance.`)
+        .setDescription(`🌟 **Need Assistance? We've Got You Covered!**\n\nIf you have questions, need help, or just want to chat, our support team is here to assist you every step of the way. Reach out to us using the \`/support\` command, and we'll respond promptly to ensure your experience is seamless and enjoyable.\n\n📌 **How to Use </support:1175029776998748234>:**\n\n- Simply type </support:1175029776998748234> followed by your question or issue in <#1168847322407501826>\n- Our dedicated support team is available 24/7 to provide you with the best assistance.`)
         .setFooter({ text: `✨ Your satisfaction is our top priority, and we're committed to delivering top-notch support and service.` })
         .setTimestamp();
 
