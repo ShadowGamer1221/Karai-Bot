@@ -156,6 +156,13 @@ app.post('/announce', async (req, res) => {
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
         channelSend.send({ embeds: [embed] });
+        const message = channelSend.lastMessage;
+
+        try {
+            await message.crosspost();
+        } catch (err) {
+            console.log(err);
+        }
 
         return res.send({ success: true });
     } catch (err) {
