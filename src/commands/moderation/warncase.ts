@@ -4,7 +4,7 @@ import { EmbedBuilder } from 'discord.js';
 import { config } from '../../config';
 import WarnCaseModel from '../../database/models/warnCase';
 import { WarningsModel } from '../../database/models/warnings';
-import { infoIconUrl, mainColor, redColor } from '../../handlers/locale';
+import { infoIconUrl, mainColor, redColor, xmarkIconUrl } from '../../handlers/locale';
 
 class WarnCaseCommand extends Command {
     constructor() {
@@ -33,43 +33,34 @@ class WarnCaseCommand extends Command {
     }
 
     async run(ctx: CommandContext) {
-        const caseNumber = ctx.args['case'];
+        let caseNumber = ctx.args['case'];
 
         // Find the specified warning case
         try {
-            const caseData = await WarnCaseModel.findOne({ Guild: ctx.guild.id, Case: caseNumber }).exec();
+            const data = await WarningsModel.findOne({ Guild: ctx.guild.id, 'Warnings.Case': caseNumber }).exec();
 
-            if (caseData) {
-                // Find associated warnings
-                const warnings = await WarningsModel.find({ Guild: ctx.guild.id, 'Warnings.Case': caseNumber }).exec();
-
-                const fields = warnings.map((warning: any) => ({
-                    name: `Warning **${warning.Warnings.find((w: any) => w.Case === caseNumber).Case}**`,
-                    value: `User: <@!${warning.User}>\nReason: ${warning.Warnings.find((w: any) => w.Case === caseNumber).Reason}\nModerator: <@!${warning.Warnings.find((w: any) => w.Case === caseNumber).Moderator}>`,
-                    inline: false
-                }));
+            if (data) {
+                const fields = data.Warnings.map((warning: any) => (`**Case ID:** **${warning.Case}**\n**Reason:** ${warning.Reason}\n**Moderator:** <@!${warning.Moderator}>\n**Warned User:** <@${data.User}>\n**Warn Date:** ${warning.Date}`));
 
                 ctx.reply({
                     embeds: [new EmbedBuilder()
-                        .setAuthor({ name: `Warn Case ${caseNumber}`, iconURL: infoIconUrl })
-                        .setDescription(`Information about warning case ${caseNumber}`)
-                        .addFields(...fields)
+                        .setAuthor({ name: `Case Info ${caseNumber}`, iconURL: infoIconUrl })
+                        .setDescription(fields[0])
                         .setColor(mainColor)]
                 });
             } else {
                 ctx.reply({
                     embeds: [new EmbedBuilder()
-                        .setAuthor({ name: `Warn Case ${caseNumber}`, iconURL: infoIconUrl })
-                        .setDescription(`No information found for warning case ${caseNumber}`)
-                        .setColor(redColor)]
+                        .setAuthor({ name: `Warnings for `, iconURL: infoIconUrl })
+                        .setDescription(`User has no warnings!`)]
                 });
             }
         } catch (err) {
             console.error(err);
             ctx.reply({
                 embeds: [new EmbedBuilder()
-                    .setAuthor({ name: `Warn Case ${caseNumber}`, iconURL: infoIconUrl })
-                    .setDescription('An error occurred while fetching information for warning case.')
+                    .setAuthor({ name: `Warnings for `, iconURL: infoIconUrl })
+                    .setDescription('An error occurred while fetching warnings.')
                     .setColor(redColor)]
             });
         }
