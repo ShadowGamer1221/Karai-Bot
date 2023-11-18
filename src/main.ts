@@ -3,7 +3,8 @@ import { handleInteraction } from './handlers/handleInteraction';
 import { handleLegacyCommand } from './handlers/handleLegacyCommand';
 import { config } from './config'; 
 import { Group } from 'bloxy/dist/structures';
-import { VoiceChannel } from 'discord.js';
+import { TextChannel, VoiceChannel } from 'discord.js';
+import connect from './database/connect';
 require('dotenv').config();
 
 // [Ensure Setup]
@@ -11,7 +12,21 @@ if(!process.env.ROBLOX_COOKIE) {
     console.error('ROBLOX_COOKIE is not set in the .env file.');
 }
 
+// [API]
 require('./api');
+
+// [Database]
+connect();
+
+// [Crosspost]
+const crosspost = async () => {
+    const channel = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
+    const messages = await channel.messages.fetch({ limit: 1 });
+    const message = messages.first();
+    if (message) {
+        message.crosspost();
+    }
+}
 
 // [Clients]
 const discordClient = new QbotClient();

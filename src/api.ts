@@ -1,6 +1,5 @@
 import express from 'express';
 import { config } from './config';
-import { provider } from './database';
 import { logAction } from './handlers/handleLogging';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
@@ -136,12 +135,6 @@ app.post('/stock', async (req, res) => {
             }
         }
 
-        try {
-            await message.crosspost();
-        } catch (err) {
-            console.log(err);
-        }
-
         return res.send({ success: true });
     } catch (err) {
         return res.send({ success: false, msg: 'Failed to add stock.' });
@@ -163,13 +156,6 @@ app.post('/announce', async (req, res) => {
         let channelSend: TextChannel;
         channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
         channelSend.send({ embeds: [embed] });
-        const message = channelSend.lastMessage;
-
-        try {
-            await message.crosspost();
-        } catch (err) {
-            console.log(err);
-        }
 
         return res.send({ success: true });
     } catch (err) {
