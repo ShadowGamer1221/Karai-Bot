@@ -390,23 +390,31 @@ export const getCommandInfoEmbed = (command: Command): EmbedBuilder => {
     return embed;
 }
 
-export const getCommandListEmbed = (modules: { [key: string]: Command[] }): EmbedBuilder => {
+export const getCommandListEmbed = (categories?: Record<string, Command[]>): EmbedBuilder => {
     const embed = new EmbedBuilder()
-        .setAuthor({ name: 'Command List', iconURL: infoIconUrl })
-        .setColor(mainColor)
-        .setDescription(config.slashCommands && config.legacyCommands ? 'Tip: Slash commands automatically display a list of available commands, and their required usage.' : null);
+        .setAuthor({ name: 'Select a Category', iconURL: infoIconUrl })
+        .setColor(mainColor);
 
-    Object.keys(modules).forEach((key) => {
-        const moduleCommands = modules[key];
-        const mappedCommands = moduleCommands.map((cmd) => `\`${cmd.trigger}\` - ${cmd.description}`);
-        embed.addFields({
-            name: key.replace('-', ' ').split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-            value: mappedCommands.join('\n'),
+    if (categories) {
+        for (const category in categories) {
+            const commands = categories[category];
+            const commandList = commands.map((cmd) => `\`${cmd.trigger}\` - ${cmd.description}`).join('\n');
+
+            embed.addFields({
+                name: category,
+                value: commandList,
+                inline: true,
+            });
+        }
+    } else {
+        embed.setDescription('Please select a category from the dropdown menu below.');
+        embed.setFooter({
+            text: 'Tip: If you do not see any categories, there may not be any available commands in this context.',
         });
-    });
+    }
 
     return embed;
-}
+};
 
 export const getJoinRequestsEmbed = (joinRequests: GroupJoinRequest[]): EmbedBuilder => {
     const requestString = joinRequests.map((request) => `- \`${request['requester'].username}\``).join('\n');
