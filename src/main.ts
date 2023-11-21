@@ -18,16 +18,6 @@ require('./api');
 // [Database]
 connect();
 
-// [Crosspost]
-const crosspost = async () => {
-    const channel = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
-    const messages = await channel.messages.fetch({ limit: 1 });
-    const message = messages.first();
-    if (message) {
-        message.crosspost();
-    }
-}
-
 // [Clients]
 const discordClient = new QbotClient();
 discordClient.login(process.env.DISCORD_TOKEN);
@@ -35,6 +25,17 @@ discordClient.login(process.env.DISCORD_TOKEN);
 // [Handlers]
 discordClient.on('interactionCreate', handleInteraction as any);
 discordClient.on('messageCreate', handleLegacyCommand);
+
+// [Crosspost]
+discordClient.on('ready', async () => {
+    const channel = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
+    const message = await channel.lastMessage;
+    try {
+        await message.crosspost();
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 // [Server Stats]
 discordClient.on('ready', () => {
