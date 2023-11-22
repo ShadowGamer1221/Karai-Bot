@@ -40,7 +40,7 @@ class SearchCommand extends Command {
         .setColor(mainColor)
         .setDescription(`[Click here to see the link](${link})`)
         
-        ctx.reply({ embeds: [embed] });
+        ctx.reply({ embeds: [embed], ephemeral: true });
     }
 }
 

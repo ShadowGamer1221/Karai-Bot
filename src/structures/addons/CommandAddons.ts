@@ -136,6 +136,22 @@ export class CommandContext  {
         }
     }
 
+    async editReply(payload: string | InteractionReplyOptions | MessageCreateOptions | InteractionReplyOptions) {
+        if(this.subject instanceof CommandInteraction) {
+            try {
+                const subject = this.subject as CommandInteraction;
+                return await subject.editReply(payload);
+            } catch (err) {
+                const subject = this.subject as CommandInteraction;
+                try {
+                    return await subject.editReply(payload);
+                } catch (err) {};
+            }
+        } else {
+            return await this.subject.channel.send(payload as MessageCreateOptions);
+        }
+    }
+
     /**
      * Defers a reply.
      */
