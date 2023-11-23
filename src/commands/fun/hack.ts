@@ -26,7 +26,7 @@ class HackCommand extends Command {
     constructor() {
         super({
             trigger: 'hack',
-            description: 'Hacks a user.',
+            description: 'fake hacks a user.',
             type: 'ChatInput',
             module: 'fun', // Change to appropriate module
             args: [
