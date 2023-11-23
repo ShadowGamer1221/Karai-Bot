@@ -8,7 +8,7 @@ import { EmbedBuilder, TextChannel } from 'discord.js';
 class SearchCommand extends Command {
     constructor() {
         super({
-            trigger: 'google',
+            trigger: 'search',
             description: 'Search something on google.',
             type: 'ChatInput',
             module: 'search',
