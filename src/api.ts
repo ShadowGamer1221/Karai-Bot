@@ -3,7 +3,7 @@ import { config } from './config';
 import { logAction } from './handlers/handleLogging';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
-import { ButtonBuilder, EmbedBuilder, TextChannel, time, ButtonStyle, ChannelType, PermissionsBitField } from 'discord.js';
+import { ButtonBuilder, EmbedBuilder, TextChannel, time, ButtonStyle, ChannelType, PermissionsBitField, ActivityType } from 'discord.js';
 import { discordClient } from './main';
 import { checkIconUrl, infoIconUrl, mainColor, greenColor, redColor } from './handlers/locale';
 import promote from './commands/admin/promote';
@@ -419,8 +419,8 @@ app.post('/botplayingstatus', async (req, res) => {
     try {
         const { type, value } = req.body;
 
-        if (type === 'playing' || type === 'listening' || type === 'watching' || type === 'competing') {
-            await discordClient.user.setActivity(value, { type });
+        if (type === 'Playing' || type === 'Listening' || type === 'Watching' || type === 'Competing') {
+            await discordClient.user.setActivity(ActivityType[type], value );
             res.send({ success: true });
         } else {
             res.send({ success: false, msg: 'Invalid status type.' });

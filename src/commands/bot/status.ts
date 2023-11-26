@@ -66,9 +66,7 @@ const value = ctx.args['value'];
 
 ctx.reply({ embeds: [successEmbed] });
 
-discordClient.user.setActivity(value, {
-    type: type,
-});
+discordClient.user.setActivity(value, {type: type,});
     }
 }
 
