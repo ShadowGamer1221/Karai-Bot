@@ -310,8 +310,8 @@ app.post('/apply', async (req, res) => {
     try {
         const { userId } = req.body;
 
-        const memberfetch = await discordClient.guilds.cache.get('872395463368769576').members.fetch(userId);
         const guild = discordClient.guilds.cache.get('872395463368769576');
+        const memberfetch = await discordClient.guilds.cache.get('872395463368769576').members.fetch(userId);
 
         // Define a category for the clan application channels (you may need to create the category first).
         const categoryID = '1168840654672109629'; // Replace with the actual category ID.
@@ -412,6 +412,22 @@ app.post('/apply', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.send({ success: false, msg: 'Internal server error.' });
+    }
+});
+
+app.post('/botplayingstatus', async (req, res) => {
+    try {
+        const { type, value } = req.body;
+
+        if (type === 'playing' || type === 'listening' || type === 'watching' || type === 'competing') {
+            await discordClient.user.setActivity(value, { type });
+            res.send({ success: true });
+        } else {
+            res.send({ success: false, msg: 'Invalid status type.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to set playing status.' });
     }
 });
 
