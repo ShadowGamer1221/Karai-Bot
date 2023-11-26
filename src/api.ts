@@ -230,6 +230,16 @@ app.post('/botstatus', async (req, res) => {
     }
 });
 
+app.get('/currentstatus', async (req, res) => {
+    try {
+        const status = discordClient.user.presence.status;
+        res.send({ success: true, status });
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to get current status.' });
+    }
+});
+
 app.post('/demote', async (req, res) => {
     try {
         const { userId } = req.body;
@@ -294,9 +304,28 @@ app.post('/demote', async (req, res) => {
 
 app.get('/currentstock', async (req, res) => {
     try {
-        const channelSend: TextChannel = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
-        const message = channelSend.lastMessage;
-        res.send({ success: true, msg: message.content });
+        const lastEmbed = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
+        
+        if (!lastEmbed) {
+            return res.send({ success: false, msg: 'Channel not found.' });
+        }
+        
+        const lastMessage = lastEmbed.lastMessage;
+        
+        if (!lastMessage) {
+            return res.send({ success: false, msg: 'No message found in the channel.' });
+        }
+        
+        const embed = lastMessage.embeds[0];
+        
+        if (!embed) {
+            return res.send({ success: false, msg: 'No embed found in the message.' });
+        }
+        
+        const description = embed.description;
+        const stock = description.split('\n')[0];
+
+        return res.send({ success: true, stock });
     } catch (error) {
         console.error(error);
         res.send({ success: false, msg: 'Failed to get current stock.' });
