@@ -268,30 +268,34 @@ app.post('/demote', async (req, res) => {
             }
 
             try {
+                // Remove the user's highest role
+                const highestRole = member.roles.highest;
+                await member.roles.remove(highestRole);
+
+                // Add the demoted role
                 await member.roles.add(prevRole);
 
                 const dmEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Karai Crew', iconURL: infoIconUrl })
-                    .setDescription(`You have been demoted to the **${prevRole.name}** role.`)
-                    .setColor(redColor);
+                    .setDescription(`You have been demoted to the **${prevRole.name}** role.`);
                 member.send({ embeds: [dmEmbed] });
 
                 const successEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Success!', iconURL: checkIconUrl })
                     .setColor(greenColor)
-                    .setDescription(`Successfully demoted <@${userId}> to the <@&${prevRole.id}> role`);
+                    .setDescription(`Successfully demoted <@${userId}> to the <@&${prevRole.id}> role and removed the highest role.`);
                 res.send({ success: true, msg: successEmbed.toJSON() });
 
                 const channelSend: TextChannel = await discordClient.channels.fetch('1168628274759471155') as TextChannel;
                 const reasonEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Karai Logs', iconURL: infoIconUrl })
                     .setColor(mainColor)
-                    .setDescription(`**Staff Member:** API Action\n**Action:** Demote\n**Target:** ${member}\n**Reason:** Demotion from \`${prevRole.name}\``)
+                    .setDescription(`**Staff Member:** API Action\n**Action:** Demote\n**Target:** ${member}\n**Reason:** Demotion from \`${highestRole.name}\` to \`${prevRole.name}\``)
                     .setTimestamp();
                 channelSend.send({ embeds: [reasonEmbed] });
             } catch (error) {
                 console.error(error);
-                res.send({ success: false, msg: `Failed to demote ${member} to the <@&${prevRole.id}> role.` });
+                res.send({ success: false, msg: `Failed to demote ${member} to the <@&${prevRole.id}> role and remove the highest role.` });
             }
         } else {
             res.send({ success: false, msg: `${member} already has the selected role.` });
