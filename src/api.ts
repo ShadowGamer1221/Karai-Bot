@@ -5,7 +5,8 @@ import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
 import { EmbedBuilder, TextChannel, time } from 'discord.js';
 import { discordClient } from './main';
-import { infoIconUrl, mainColor } from './handlers/locale';
+import { checkIconUrl, infoIconUrl, mainColor, greenColor } from './handlers/locale';
+import promote from './commands/admin/promote';
 const app = express();
 require('dotenv').config();
 
@@ -151,6 +152,67 @@ app.post('/announce', async (req, res) => {
     }
 });
 
+app.post('/promote', async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        const member = await discordClient.guilds.cache.get('872395463368769576').members.fetch(userId);
+
+        if (!member) {
+            return res.send({ success: false, msg: 'The mentioned user is not in this server.' });
+        }
+
+        const roles = member.roles.cache;
+
+        // Find the current role position
+        const currentRolePosition = member.roles.highest.position;
+
+        // Find the next role above the current one
+        const nextRole = member.guild.roles.cache.find((r) => r.position === currentRolePosition + 1);
+
+        if (!nextRole) {
+            return res.send({ success: false, msg: 'No role found above the current one.' });
+        }
+
+        if (!roles.has(nextRole.id)) {
+            if (nextRole.position <= currentRolePosition) {
+                return res.send({ success: false, msg: 'The specified role must be higher in position than the user\'s current role.' });
+            }
+
+            try {
+                await member.roles.add(nextRole);
+
+                const dmEmbed = new EmbedBuilder()
+                    .setAuthor({ name: 'Karai Crew', iconURL: infoIconUrl })
+                    .setDescription(`Congratulations! You have been promoted to the **${nextRole.name}** role.`)
+                    .setColor(greenColor);
+                member.send({ embeds: [dmEmbed] });
+
+                const successEmbed = new EmbedBuilder()
+                    .setAuthor({ name: 'Success!', iconURL: checkIconUrl })
+                    .setColor(greenColor)
+                    .setDescription(`Successfully promoted <@${userId}> to the <@&${nextRole.id}> role`);
+                res.send({ success: true, msg: successEmbed.toJSON() });
+
+                const channelSend: TextChannel = await discordClient.channels.fetch('1168628274759471155') as TextChannel;
+                const reasonEmbed = new EmbedBuilder()
+                    .setAuthor({ name: 'Karai Logs', iconURL: infoIconUrl })
+                    .setColor(mainColor)
+                    .setDescription(`**Staff Member:** API Action\n**Action:** Promote\n**Target:** ${member}\n**Reason:** Promotion to ${nextRole.name}`)
+                    .setTimestamp();
+                channelSend.send({ embeds: [reasonEmbed] });
+            } catch (error) {
+                console.error(error);
+                res.send({ success: false, msg: `Failed to promote ${member} to the <@&${nextRole.id}> role.` });
+            }
+        } else {
+            res.send({ success: false, msg: `${member} already has the selected role.` });
+        }
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to promote user.' });
+    }
+});
 
 if(config.api) {
     app.use((req, res, next) => {
