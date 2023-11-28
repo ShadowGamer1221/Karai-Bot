@@ -7,6 +7,7 @@ import { ButtonBuilder, EmbedBuilder, TextChannel, time, ButtonStyle, ChannelTyp
 import { discordClient } from './main';
 import { checkIconUrl, infoIconUrl, mainColor, greenColor, redColor } from './handlers/locale';
 import promote from './commands/admin/promote';
+import { WarningsModel } from './database/models/warnings';
 const app = express();
 require('dotenv').config();
 
@@ -112,7 +113,8 @@ app.post('/stock', async (req, res) => {
                 let channelSend: TextChannel;
                 channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
                 channelSend.send({ 
-                    content: `<@1143229567625068696> <@721571070380867604> <@375856118536077314>`,
+                    content: `<@1143229567625068696> <@721571070380867604> <@375856118536077314> <@&872580455348723722>`,
+                    allowedMentions: { roles: ['872580455348723722'] }
             });
         }
 
@@ -120,7 +122,8 @@ app.post('/stock', async (req, res) => {
                 let channelSend: TextChannel;
                 channelSend = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
                 channelSend.send({ 
-                    content: `<@1143229567625068696> <@721571070380867604> <@375856118536077314>`,
+                    content: `<@1143229567625068696> <@721571070380867604> <@375856118536077314> <@&872580455348723722>`,
+                    allowedMentions: { roles: ['872580455348723722'] }
             });
         }
 
@@ -237,6 +240,34 @@ app.get('/currentstatus', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.send({ success: false, msg: 'Failed to get current status.' });
+    }
+});
+
+app.get('/userwarnings', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if(!userId) return res.send({ success: false, msg: 'Missing parameters.' });
+        let guildId = '872395463368769576';
+        let user = userId;
+        const userData = await WarningsModel.find({ Guild: guildId, User: user }).exec();
+        const warnings = userData.flatMap((data) => data.Warnings);
+        const modwarn = warnings.map((warning) => warning.Moderator);
+        const fetchMod = await discordClient.users.fetch(`${modwarn}`);
+        if (warnings.length > 0) {
+            const fields = warnings.map((warning: any) => ({
+                moderator: fetchMod.username,
+                warnId: `${warning.Case}`,
+                reason: `${warning.Reason}`,
+                inline: true
+            }));
+
+            res.send({ success: true, warnings });
+        } else {
+            res.send({ success: false, msg: 'No warnings found.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to get user warnings.' });
     }
 });
 
