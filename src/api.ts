@@ -321,9 +321,10 @@ app.post('/warn', async (req, res) => {
         await newWarningModel.save();
 
         const dmEmbed = new EmbedBuilder()
-            .setAuthor({ name: 'Karai Crew', iconURL: infoIconUrl })
-            .setDescription(`You have been warned for the following reason:\n\n**${reason}**`)
-            .setColor(redColor);
+            .setAuthor({ name: 'Warning', iconURL: infoIconUrl })
+            .setDescription(`**Server:** Karai Pirates\n**Action:** Warn\n**Reason:** ${reason}`)
+            .setColor(mainColor)
+            .setFooter({ text: `Case ID: ${warningCount + 1}`})
         member.send({ embeds: [dmEmbed] });
 
         const successEmbed = new EmbedBuilder()
