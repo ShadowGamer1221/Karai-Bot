@@ -245,29 +245,30 @@ app.get('/currentstatus', async (req, res) => {
 
 app.get('/userwarnings', async (req, res) => {
     try {
-        const { userId } = req.body;
-        if(!userId) return res.send({ success: false, msg: 'Missing parameters.' });
-        let guildId = '872395463368769576';
-        let user = userId;
-        const userData = await WarningsModel.find({ Guild: guildId, User: user }).exec();
-        const warnings = userData.flatMap((data) => data.Warnings);
-        const modwarn = warnings.map((warning) => warning.Moderator);
-        const fetchMod = await discordClient.users.fetch(`${modwarn}`);
-        if (warnings.length > 0) {
-            const fields = warnings.map((warning: any) => ({
-                moderator: fetchMod.username,
-                warnId: `${warning.Case}`,
-                reason: `${warning.Reason}`,
-                inline: true
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.send({ success: false, msg: 'Missing parameters.' });
+        }
+
+        const guildId = '872395463368769576';
+
+        const userData = await WarningsModel.find({ Guild: guildId, User: userId }).exec();
+
+        if (userData.length > 0) {
+            const warnings = userData.map((warning) => ({
+                moderator: warning.User,
+                warnId: warning.Case,
+                reason: warning.Warnings[0].Reason // Assuming there is only one warning per document
             }));
 
-            res.send({ success: true, warnings });
+            return res.send({ success: true, warnings });
         } else {
-            res.send({ success: false, msg: 'No warnings found.' });
+            return res.send({ success: false, msg: 'No warnings found.' });
         }
     } catch (error) {
         console.error(error);
-        res.send({ success: false, msg: 'Failed to get user warnings.' });
+        return res.send({ success: false, msg: 'Failed to get user warnings.' });
     }
 });
 
