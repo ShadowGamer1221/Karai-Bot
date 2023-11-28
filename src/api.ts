@@ -272,6 +272,101 @@ app.get('/userwarnings', async (req, res) => {
     }
 });
 
+app.post('/warn', async (req, res) => {
+    try {
+        const { userId, reason } = req.body;
+
+        if (!userId || !reason) {
+            return res.send({ success: false, msg: 'Missing parameters.' });
+        }
+
+        const guildId = '872395463368769576';
+
+        const member = await discordClient.guilds.cache.get(guildId).members.fetch(userId);
+
+        if (!member) {
+            return res.send({ success: false, msg: 'The mentioned user is not in this server.' });
+        }
+
+        const roles = member.roles.cache;
+
+        const staffRole = member.guild.roles.cache.find((r) => r.id === config.permissions.moderators[0]);
+
+        if (!staffRole) {
+            return res.send({ success: false, msg: 'The staff role was not found.' });
+        }
+
+        if (!roles.has(staffRole.id)) {
+            return res.send({ success: false, msg: 'The mentioned user is not a staff member.' });
+        }
+
+        const currentWarnings = await WarningsModel.find({ Guild: guildId, User: userId }).exec();
+
+        const warningCount = currentWarnings.length;
+
+        const newWarning = {
+            Case: warningCount + 1,
+            Moderator: userId,
+            Reason: reason,
+        };
+
+        const warningData = {
+            Guild: guildId,
+            User: userId,
+            Warnings: [newWarning],
+        };
+
+        const newWarningModel = new WarningsModel(warningData);
+
+        await newWarningModel.save();
+
+        const dmEmbed = new EmbedBuilder()
+            .setAuthor({ name: 'Karai Crew', iconURL: infoIconUrl })
+            .setDescription(`You have been warned for the following reason:\n\n**${reason}**`)
+            .setColor(redColor);
+        member.send({ embeds: [dmEmbed] });
+
+        const successEmbed = new EmbedBuilder()
+            .setAuthor({ name: 'Success!', iconURL: checkIconUrl })
+            .setColor(greenColor)
+            .setDescription(`Successfully warned <@${userId}> for the following reason:\n\n**${reason}**`);
+        res.send({ success: true, msg: successEmbed.toJSON() });
+
+        const channelSend: TextChannel = await discordClient.channels.fetch('1168628274759471155') as TextChannel;
+        const reasonEmbed = new EmbedBuilder()
+            .setAuthor({ name: 'Karai Logs', iconURL: infoIconUrl })
+            .setColor(mainColor)
+            .setDescription(`**Staff Member:** API Action\n**Action:** Warn\n**Target:** ${member}\n**Reason:** ${reason}`)
+            .setTimestamp();
+        channelSend.send({ embeds: [reasonEmbed] });
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to warn user.' });
+    }
+});
+
+app.get('/case', async (req, res) => {
+    try {
+        const { caseId } = req.query;
+
+        if (!caseId) {
+            return res.send({ success: false, msg: 'Missing parameters.' });
+        }
+
+        const guildId = '872395463368769576';
+        const data = await WarningsModel.findOne({ Guild: guildId, 'Warnings.Case': caseId }).exec();
+        const fields = data.Warnings.map((warning: any) => ({
+            case: warning.Case,
+            reason: warning.Reason,
+            moderator: warning.Moderator,
+            date: warning.Date}));
+        res.send({ success: true, fields });
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to get case.' });
+    }
+});
+
 app.post('/demote', async (req, res) => {
     try {
         const { userId } = req.body;
