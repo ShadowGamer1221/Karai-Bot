@@ -88,6 +88,7 @@ app.post('/stock', async (req, res) => {
             'Shadow': '<:kr_shadow:1171135428326342729>',
             'Dragon': '<:kr_dragon:1171136763427831918>',
             'Venom': '<:kr_venom:1171137731125059596>',
+            'Soul': '<:kr_soul:1175303848877891685>',
         };
 
         const replaceMessage = receivedMessage.replace(/\[([^\]]+)]/g, (match, name) => {
