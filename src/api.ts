@@ -8,6 +8,7 @@ import { discordClient } from './main';
 import { checkIconUrl, infoIconUrl, mainColor, greenColor, redColor } from './handlers/locale';
 import promote from './commands/admin/promote';
 import { WarningsModel } from './database/models/warnings';
+import { groupBy } from 'lodash';
 const app = express();
 require('dotenv').config();
 
@@ -101,7 +102,7 @@ app.post('/stock', async (req, res) => {
             .setAuthor({ name: 'Stock Announcement', iconURL: infoIconUrl })
             .setColor(mainColor)
             .setDescription(`${replaceMessage}\n\nNext stock drop ${timeString}`)
-            .setFooter({ text: `.gg/karai` })
+            .setFooter({ text: `.gg/Yrh8EHp2Sq` })
             .setTimestamp();
 
         let channelSend: TextChannel;
@@ -559,34 +560,8 @@ app.post('/botplayingstatus', async (req, res) => {
     }
 });
 
-app.get('/currentstock', async (req, res) => {
-    try {
-        const lastEmbed = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
-        
-        if (!lastEmbed) {
-            return res.send({ success: false, msg: 'Channel not found.' });
-        }
-        
-        const lastMessage = lastEmbed.lastMessage;
-        
-        if (!lastMessage) {
-            return res.send({ success: false, msg: 'No message found in the channel.' });
-        }
-        
-        const embed = lastMessage.embeds[0];
-        
-        if (!embed) {
-            return res.send({ success: false, msg: 'No embed found in the message.' });
-        }
-        
-        const description = embed.description;
-        const stock = description.split('\n')[0];
-
-        return res.send({ success: true, stock });
-    } catch (error) {
-        console.error(error);
-        res.send({ success: false, msg: 'Failed to get current stock.' });
-    }
+app.get('/status', async (req, res) => {
+    
 });
 
 if(config.api) {
