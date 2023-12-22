@@ -41,11 +41,13 @@ discordClient.on('ready', () => {
 async function checkAndCrosspost() {
     try {
         const channel = await discordClient.channels.fetch('1171130227213222041') as TextChannel;
-        const lastTwoMessages = await channel.messages.fetch({ limit: 2 });
+        const message = await channel.lastMessage;
 
-        lastTwoMessages.forEach(async (message) => {
+        if (message) {
             await message.crosspost();
-        });
+        } else {
+            console.log('No messages found in the specified channel.');
+        }
     } catch (err) {
         console.error(err);
     }
