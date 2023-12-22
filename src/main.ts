@@ -3,8 +3,9 @@ import { handleInteraction } from './handlers/handleInteraction';
 import { handleLegacyCommand } from './handlers/handleLegacyCommand';
 import { config } from './config'; 
 import { Group } from 'bloxy/dist/structures';
-import { TextChannel, VoiceChannel } from 'discord.js';
+import { EmbedBuilder, TextChannel, VoiceChannel, AuditLogEvent } from 'discord.js';
 import connect from './database/connect';
+import { mainColor } from './handlers/locale';
 require('dotenv').config();
 
 // [Ensure Setup]
@@ -54,42 +55,65 @@ async function checkAndCrosspost() {
 
 // [Server Stats]
 discordClient.on('ready', () => {
-const botChannelId = '1137703394048491520';
-        const memberChannelId = '1137703386179969066';
-        const normalMemberChannelId = '1137703389980000296';
+    const botChannelId = '1137703394048491520';
+    const memberChannelId = '1137703386179969066';
+    const normalMemberChannelId = '1137703389980000296';
 
-        async function updateChannelName(channel: VoiceChannel, text: string) {
-            await channel.setName(text);
-        }
+    async function updateChannelName(channel: VoiceChannel, text: string) {
+        await channel.setName(text);
+    }
 
-        const botChannel = discordClient.channels.cache.get(botChannelId);
-        const memberChannel = discordClient.channels.cache.get(memberChannelId);
-        const normalMemberChannel = discordClient.channels.cache.get(normalMemberChannelId);
+    const botChannel = discordClient.channels.cache.get(botChannelId);
+    const memberChannel = discordClient.channels.cache.get(memberChannelId);
+    const normalMemberChannel = discordClient.channels.cache.get(normalMemberChannelId);
 
-        if (botChannel && botChannel instanceof VoiceChannel && memberChannel && memberChannel instanceof VoiceChannel && normalMemberChannel && normalMemberChannel instanceof VoiceChannel) {
-            setInterval(async () => {
-                const guild = discordClient.guilds.cache.get('900771217345216532');
+    if (botChannel && botChannel instanceof VoiceChannel && memberChannel && memberChannel instanceof VoiceChannel && normalMemberChannel && normalMemberChannel instanceof VoiceChannel) {
+        setInterval(async () => {
+            const guild = discordClient.guilds.cache.get('900771217345216532');
 
-                if (guild) {
-                    await guild.members.fetch();
+            if (guild) {
+                await guild.members.fetch();
 
-                    const memberCount = guild.memberCount;
-                    const botCount = guild.members.cache.filter(member => member.user.bot).size;
-                    const normalMemberCount = memberCount - botCount;
+                const memberCount = guild.memberCount;
+                const botCount = guild.members.cache.filter(member => member.user.bot).size;
+                const normalMemberCount = memberCount - botCount;
 
-                    updateChannelName(botChannel, `Bots: ${botCount}`);
+                updateChannelName(botChannel, `Bots: ${botCount}`);
+                updateChannelName(memberChannel, `Total Members: ${memberCount}`);
+                updateChannelName(normalMemberChannel, `Members: ${normalMemberCount}`);
+            } else {
+                console.error('Server not found.');
+            }
+        }, 5000); // Update every 5 seconds (5,000 milliseconds)
+    } else {
+        console.error('Voice channels not found.');
+    }
+});
 
-                    updateChannelName(memberChannel, `Total Members: ${memberCount}`);
+// [Welcome New Members]
+discordClient.on('guildMemberAdd', (member) => {
+    const generalChannel = member.guild.channels.cache.get('872395463368769579') as TextChannel; // Change to your #general channel ID
+    const recruitmentChannel = member.guild.channels.cache.get('1168846006264270858') as TextChannel; // Change to your #recruitment channel ID
 
-                    updateChannelName(normalMemberChannel, `Members: ${normalMemberCount}`);
-                } else {
-                    console.error('Server not found.');
-                }
-            }, 5000); // Update every 5 seconds (5,000 milliseconds)
-        } else {
-            console.error('Voice channels not found.');
-        }
-    });
+    if (generalChannel) {
+        const welcomeEmbed = {
+            color: 0x3498db,
+            title: `Welcome to the server, ${member.user.username}!`,
+            description: 'We are glad to have you here. If you would like to become a part of the Karai Crew, please consider applying in the <#1168846006264270858> channel!',
+            fields: [
+                {
+                    name: 'How to Apply',
+                    value: `Head over to ${recruitmentChannel} and follow the application process.`,
+                },
+            ],
+            thumbnail: {
+                url: member.user.displayAvatarURL(),
+            },
+        };
+
+        generalChannel.send({ embeds: [welcomeEmbed] });
+    }
+});
 
 // [Module]
 export { discordClient };
