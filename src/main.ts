@@ -5,7 +5,7 @@ import { config } from './config';
 import { Group } from 'bloxy/dist/structures';
 import { EmbedBuilder, TextChannel, VoiceChannel, AuditLogEvent } from 'discord.js';
 import connect from './database/connect';
-import { mainColor } from './handlers/locale';
+import { infoIconUrl, mainColor } from './handlers/locale';
 require('dotenv').config();
 
 // [Ensure Setup]
@@ -92,12 +92,13 @@ discordClient.on('ready', () => {
 
 // [Welcome New Members]
 discordClient.on('guildMemberAdd', (member) => {
-    const generalChannel = member.guild.channels.cache.get('872395463368769579') as TextChannel; // Change to your #general channel ID
+    const generalChannel = member.guild.channels.cache.get('1187825749319762061') as TextChannel; // Change to your #general channel ID
     const recruitmentChannel = member.guild.channels.cache.get('1168846006264270858') as TextChannel; // Change to your #recruitment channel ID
 
     if (generalChannel) {
         const welcomeEmbed = {
-            color: 0x3498db,
+            author: ({ name: 'Member Join', iconURL: infoIconUrl }),
+            color: 0x906FED,
             title: `Welcome to the server, ${member.user.username}!`,
             description: 'We are glad to have you here. If you would like to become a part of the Karai Crew, please consider applying in the <#1168846006264270858> channel!',
             fields: [
@@ -106,6 +107,28 @@ discordClient.on('guildMemberAdd', (member) => {
                     value: `Head over to ${recruitmentChannel} and follow the application process.`,
                 },
             ],
+            thumbnail: {
+                url: member.user.displayAvatarURL(),
+            },
+        };
+
+        generalChannel.send({ embeds: [welcomeEmbed] });
+        generalChannel.send({ 
+            allowedMentions: { parse: ['users'] },
+            content: `<@${member.user.id}>`,
+         });
+    }
+});
+
+// [Leave Members]
+discordClient.on('guildMemberRemove', (member) => {
+    const generalChannel = member.guild.channels.cache.get('1187826049787105280') as TextChannel; // Change to your #general channel ID
+
+    if (generalChannel) {
+        const welcomeEmbed = {
+            color: 0xFA5757,
+            title: `😢 Goodbye, ${member.user.username}!`,
+            description: `**See you next time buddy! 😢**`,
             thumbnail: {
                 url: member.user.displayAvatarURL(),
             },
