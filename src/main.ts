@@ -45,8 +45,6 @@ async function checkAndCrosspost() {
 
         if (message) {
             await message.crosspost();
-        } else {
-            console.log('No messages found in the specified channel.');
         }
     } catch (err) {
         console.error(err);
@@ -135,6 +133,32 @@ discordClient.on('guildMemberRemove', (member) => {
         };
 
         generalChannel.send({ embeds: [welcomeEmbed] });
+    }
+});
+
+// [Console Logs to Discord]
+discordClient.on('ready', () => {
+    const guild = discordClient.guilds.cache.get('872395463368769576');
+
+    if (guild) {
+        const channel = guild.channels.cache.get('1187837348722003988') as TextChannel;
+
+        if (channel) {
+
+            console.log('Console logs channel found.');
+            console.log = (message: any) => {
+                const consoleEmbed = new EmbedBuilder()
+                .setAuthor({ name: 'Console Logs', iconURL: infoIconUrl })
+                .setColor(mainColor)
+                .setDescription(`\`\`\`${message}\`\`\``)
+                .setTimestamp();
+                channel.send({ embeds: [consoleEmbed] });
+            };
+        } else {
+            console.error('Console logs channel not found.');
+        }
+    } else {
+        console.error('Server not found.');
     }
 });
 

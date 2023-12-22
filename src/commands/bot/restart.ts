@@ -33,12 +33,18 @@ class RestartCommand extends Command {
 
     async run(ctx: CommandContext) {
 
-        const successEmbed = new EmbedBuilder()
-.setColor(greenColor)
-.setDescription(`**Restarting Server...**`)
+        const embed = new EmbedBuilder()
+            .setAuthor({ name: `Restarting...`, iconURL: discordClient.user?.avatarURL() })
+            .setColor(greenColor)
+            .setTimestamp();
 
-ctx.reply({ embeds: [successEmbed] });
- process.exit(1);
+        await ctx.reply({ embeds: [embed] });
+
+        if (!ctx.replied) {
+            await ctx.reply({ embeds: [embed] });
+            console.log('Restarting bot...');
+        }
+        process.exit();
     }
 }
 
