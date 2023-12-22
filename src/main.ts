@@ -146,6 +146,14 @@ discordClient.on('ready', () => {
         if (channel) {
 
             console.log('Console logs channel found.');
+            console.error = (message: any) => {
+                const consoleEmbed = new EmbedBuilder()
+                .setAuthor({ name: 'Console Logs', iconURL: infoIconUrl })
+                .setColor(mainColor)
+                .setDescription(`\`\`\`${message}\`\`\``)
+                .setTimestamp();
+                channel.send({ embeds: [consoleEmbed] });
+            };
             console.log = (message: any) => {
                 const consoleEmbed = new EmbedBuilder()
                 .setAuthor({ name: 'Console Logs', iconURL: infoIconUrl })
