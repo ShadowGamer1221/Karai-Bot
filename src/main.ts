@@ -3,7 +3,7 @@ import { handleInteraction } from './handlers/handleInteraction';
 import { handleLegacyCommand } from './handlers/handleLegacyCommand';
 import { config } from './config'; 
 import { Group } from 'bloxy/dist/structures';
-import { EmbedBuilder, TextChannel, VoiceChannel, AuditLogEvent } from 'discord.js';
+import { EmbedBuilder, TextChannel, VoiceChannel, ChannelType } from 'discord.js';
 import connect from './database/connect';
 import { infoIconUrl, mainColor } from './handlers/locale';
 require('dotenv').config();
@@ -53,9 +53,9 @@ async function checkAndCrosspost() {
 
 // [Server Stats]
 discordClient.on('ready', () => {
-    const botChannelId = '1137703394048491520';
-    const memberChannelId = '1137703386179969066';
-    const normalMemberChannelId = '1137703389980000296';
+    const botChannelId = '1188115162817888346';
+    const memberChannelId = '1188115370473701447';
+    const normalMemberChannelId = '1188115438903758878';
 
     async function updateChannelName(channel: VoiceChannel, text: string) {
         await channel.setName(text);
@@ -67,18 +67,19 @@ discordClient.on('ready', () => {
 
     if (botChannel && botChannel instanceof VoiceChannel && memberChannel && memberChannel instanceof VoiceChannel && normalMemberChannel && normalMemberChannel instanceof VoiceChannel) {
         setInterval(async () => {
-            const guild = discordClient.guilds.cache.get('900771217345216532');
+            const guild = discordClient.guilds.cache.get('872395463368769576');
 
             if (guild) {
                 await guild.members.fetch();
 
                 const memberCount = guild.memberCount;
+                const fetchCrewmembers = await guild.roles.fetch('1057796072531042374').then(role => role.members.size);
                 const botCount = guild.members.cache.filter(member => member.user.bot).size;
-                const normalMemberCount = memberCount - botCount;
+                const normalMemberCount = fetchCrewmembers as Number;
 
                 updateChannelName(botChannel, `Bots: ${botCount}`);
                 updateChannelName(memberChannel, `Total Members: ${memberCount}`);
-                updateChannelName(normalMemberChannel, `Members: ${normalMemberCount}`);
+                updateChannelName(normalMemberChannel, `Crew Members: ${normalMemberCount}`);
             } else {
                 console.error('Server not found.');
             }
@@ -146,27 +147,51 @@ discordClient.on('ready', () => {
         if (channel) {
 
             console.log('Console logs channel found.');
+            console.warn = (message: any) => {
+                channel.send({ content: `\`\`\`${message}\`\`\`` });
+            };
             console.error = (message: any) => {
-                const consoleEmbed = new EmbedBuilder()
-                .setAuthor({ name: 'Console Logs', iconURL: infoIconUrl })
-                .setColor(mainColor)
-                .setDescription(`\`\`\`${message}\`\`\``)
-                .setTimestamp();
-                channel.send({ embeds: [consoleEmbed] });
+                channel.send({ content: `\`\`\`${message}\`\`\`` });
             };
             console.log = (message: any) => {
-                const consoleEmbed = new EmbedBuilder()
-                .setAuthor({ name: 'Console Logs', iconURL: infoIconUrl })
-                .setColor(mainColor)
-                .setDescription(`\`\`\`${message}\`\`\``)
-                .setTimestamp();
-                channel.send({ embeds: [consoleEmbed] });
+                channel.send({ content: `\`\`\`${message}\`\`\`` });
             };
         } else {
             console.error('Console logs channel not found.');
         }
     } else {
         console.error('Server not found.');
+    }
+});
+
+// [DM for Feedback]
+discordClient.on('messageCreate', async (message) => {
+    if (message.channel.type === ChannelType.DM) {
+        const guild = discordClient.guilds.cache.get('872395463368769576');
+
+        if (guild) {
+            const channel = guild.channels.cache.get('1168601617524854824') as TextChannel;
+
+            if (channel) {
+                const embed = new EmbedBuilder()
+                .setAuthor({ name: `Feedback`, iconURL: infoIconUrl })
+                .setColor(mainColor)
+                .setDescription(message.content)
+                .setFooter({ text: `From ${message.author.tag} (${message.author.id})` })
+                .setTimestamp();
+
+                channel.send({ embeds: [embed] });
+            } else {
+                console.error('Console logs channel not found.');
+            }
+        } else {
+            console.error('Server not found.');
+        }
+    }
+
+    if (message.channel.type === ChannelType.DM && message.content === 'ping') {
+        message.reply({ content: 'pong' });
+        
     }
 });
 
