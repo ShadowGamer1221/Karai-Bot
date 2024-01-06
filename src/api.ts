@@ -9,6 +9,7 @@ import { checkIconUrl, infoIconUrl, mainColor, greenColor, redColor } from './ha
 import promote from './commands/admin/promote';
 import { WarningsModel } from './database/models/warnings';
 import { groupBy } from 'lodash';
+import { Client as RobloxClient } from 'bloxy';
 const app = express();
 require('dotenv').config();
 
@@ -564,6 +565,38 @@ app.post('/botplayingstatus', async (req, res) => {
 app.get('/status', async (req, res) => {
     
 });
+
+app.post('/verify', async (req, res) => {
+    try {
+        const { username, robloxUsername } = req.body;
+
+        // Validate the input parameters
+        if (!username || !robloxUsername) {
+            return res.send({ success: false, msg: 'Missing parameters.' });
+        }
+
+        // Use Bloxy to verify the user's Roblox account
+        const robloxClient = new RobloxClient({ credentials: { cookie: process.env.ROBLOX_COOKIE } });
+        (async () => {
+            await robloxClient.login().catch(console.error);
+        })();
+
+        // Check if the verification was successful
+        if (robloxClient.apis.usersAPI.getUsersByUsernames(robloxUsername)) {
+            // Add your logic here for handling successful verification
+            const member = await discordClient.guilds.cache.get('872395463368769576').members.fetch(username);
+            member.roles.add('872405718936993852');
+            return res.send({ success: true, msg: 'User verified successfully.' });
+        } else {
+            // Add your logic here for handling unsuccessful verification
+            return res.send({ success: false, msg: 'User verification failed.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.send({ success: false, msg: 'Failed to verify user.' });
+    }
+});
+
 
 if(config.api) {
     app.use((req, res, next) => {
