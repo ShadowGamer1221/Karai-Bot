@@ -1,5 +1,6 @@
-import { Client as RobloxClient } from 'bloxy';
-import { EmbedBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { robloxClient } from '../../main';
+import { EmbedBuilder, ButtonBuilder, ButtonStyle, TextChannel } from 'discord.js';
+import { discordClient } from '../../main';
 import { CommandContext } from '../../structures/addons/CommandAddons';
 import { Command } from '../../structures/Command';
 import { config } from '../../config';
@@ -10,10 +11,10 @@ class VerifyCommand extends Command {
             trigger: 'verify',
             description: 'Verify your Roblox account.',
             type: 'ChatInput',
-            module: 'bot',
+            module: 'verification',
             args: [
                 {
-                    trigger: 'robloxUsername',
+                    trigger: 'roblox-username',
                     description: 'Your Roblox username.',
                     type: 'String',
                     required: true,
@@ -29,16 +30,18 @@ class VerifyCommand extends Command {
         });
     }
 
-    run(ctx: CommandContext) {
-        const robloxClient = new RobloxClient({ credentials: { cookie: process.env.ROBLOX_COOKIE } });
+    async run(ctx: CommandContext) {
         const userId = ctx.member.id;
         const guildId = ctx.guild.id;
         const emojis = ['👍', '😂', '❤️', '🔥', '😊', '👏', '🎉', '🤔', '😎', '🚀', '💡', '🌟', '😄', '👌', '🙌'];
         const selectedEmojis = this.getRandomEmojis(5, emojis);
+        const channelId = ctx.channel.id;
+        let channelSend: TextChannel;
+        channelSend = await discordClient.channels.fetch(channelId) as TextChannel;
 
         // Get the user's Roblox description
-        const robloxUsername = ctx.args.getString('robloxUsername');
-        robloxClient.apis.usersAPI.getUsersByUsernames(robloxUsername)
+        const robloxUsername = ctx.args['roblox-username'];
+        robloxClient.getUser(ctx.args['roblox-username'] as number)
             .then((users) => {
                 const user = users[0];
                 if (user && user.id) {
@@ -59,21 +62,14 @@ class VerifyCommand extends Command {
                     .setColor('#3498db'); // You can change the color as needed
 
                 const row = new ButtonBuilder()
-                    .setCustomId('verify_done')
+                    .setCustomId('done')
                     .setLabel('Done')
                     .setStyle(ButtonStyle.Primary);
 
-                ctx.reply({ embeds: [embed], components: [
-                    {
-                        type: 1,
-                        components: [
-                            row,
-                        ],
-                    },
-                ], });
+                channelSend.send({ embeds: [embed], components: [{ type: 1, components: [row] }] });
 
                 // Collect the interaction
-                const filter = (i) => i.customId === 'verify_done' && i.user.id === userId;
+                const filter = (i) => i.customId === 'done' && i.user.id === userId;
                 const collector = ctx.channel.createMessageComponentCollector({ filter, time: 120000 }); // 120 seconds
 
                 collector.on('collect', (i) => {

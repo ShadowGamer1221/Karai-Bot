@@ -3,9 +3,10 @@ import { handleInteraction } from './handlers/handleInteraction';
 import { handleLegacyCommand } from './handlers/handleLegacyCommand';
 import { config } from './config'; 
 import { Group } from 'bloxy/dist/structures';
-import { EmbedBuilder, TextChannel, VoiceChannel, ChannelType } from 'discord.js';
+import { EmbedBuilder, TextChannel, VoiceChannel, ChannelType, ApplicationCommandData } from 'discord.js';
 import connect from './database/connect';
 import { infoIconUrl, mainColor } from './handlers/locale';
+import { Client as RobloxClient } from 'bloxy';
 require('dotenv').config();
 
 // [Ensure Setup]
@@ -137,63 +138,13 @@ discordClient.on('guildMemberRemove', (member) => {
     }
 });
 
-// [Console Logs to Discord]
-discordClient.on('ready', () => {
-    const guild = discordClient.guilds.cache.get('872395463368769576');
-
-    if (guild) {
-        const channel = guild.channels.cache.get('1187837348722003988') as TextChannel;
-
-        if (channel) {
-
-            console.log('Console logs channel found.');
-            console.warn = (message: any) => {
-                channel.send({ content: `\`\`\`${message}\`\`\`` });
-            };
-            console.error = (message: any) => {
-                channel.send({ content: `\`\`\`${message}\`\`\`` });
-            };
-            console.log = (message: any) => {
-                channel.send({ content: `\`\`\`${message}\`\`\`` });
-            };
-        } else {
-            console.error('Console logs channel not found.');
-        }
-    } else {
-        console.error('Server not found.');
-    }
-});
-
-// [DM for Feedback]
-discordClient.on('messageCreate', async (message) => {
-    if (message.channel.type === ChannelType.DM) {
-        const guild = discordClient.guilds.cache.get('872395463368769576');
-
-        if (guild) {
-            const channel = guild.channels.cache.get('1168601617524854824') as TextChannel;
-
-            if (channel) {
-                const embed = new EmbedBuilder()
-                .setAuthor({ name: `Feedback`, iconURL: infoIconUrl })
-                .setColor(mainColor)
-                .setDescription(message.content)
-                .setFooter({ text: `From ${message.author.tag} (${message.author.id})` })
-                .setTimestamp();
-
-                channel.send({ embeds: [embed] });
-            } else {
-                console.error('Console logs channel not found.');
-            }
-        } else {
-            console.error('Server not found.');
-        }
-    }
-
-    if (message.channel.type === ChannelType.DM && message.content === 'ping') {
-        message.reply({ content: 'pong' });
-        
-    }
-});
+// [Roblox Login]
+const robloxClient = new RobloxClient({ credentials: { cookie: process.env.ROBLOX_COOKIE } });
+let robloxGroup: Group = null;
+(async () => {
+    await robloxClient.login().catch(console.error);
+    robloxGroup = await robloxClient.getGroup(config.groupId);
+})();
 
 // [Module]
-export { discordClient };
+export { discordClient, robloxClient, robloxGroup };
