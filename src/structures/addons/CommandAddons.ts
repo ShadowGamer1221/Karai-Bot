@@ -7,12 +7,20 @@ import {
     GuildMember,
     BaseInteraction,
     MessageCreateOptions,
+    InteractionResponseType,
     TextChannel,
+    Routes,
+    isJSONEncodable,
+    ModalBuilder,
+    ActionRowBuilder,
+    ModalActionRowComponentBuilder,
+    TextInputBuilder,
 } from 'discord.js';
 import { Command } from '../Command';
 import { Args } from 'lexure';
 import { getMissingArgumentsEmbed } from '../../handlers/locale';
 import { config } from '../../config';
+import { discordClient } from '../../main';
 
 export class CommandContext  {
     type: 'interaction' | 'message';
@@ -20,6 +28,8 @@ export class CommandContext  {
     user?: User;
     member?: GuildMember;
     guild?: Guild;
+    token?: string;
+    id?: string;
     args?: { [key: string]: any };
     replied: boolean;
     deferred: boolean;
@@ -41,7 +51,6 @@ export class CommandContext  {
         this.channel = payload.channel as TextChannel;
         this.replied = false;
         this.deferred = false;
-
         this.args = {};
         if(payload instanceof BaseInteraction) {
             const interaction = payload as CommandInteraction;
@@ -134,6 +143,14 @@ export class CommandContext  {
         } else {
             return await this.subject.channel.send(payload as MessageCreateOptions);
         }
+    }
+
+    async showModal(modal: ModalBuilder) {
+        if (!(this.subject instanceof CommandInteraction)) {
+            throw new Error('Can only show modal for command interactions');
+        }
+    
+        await this.subject.showModal(modal);
     }
 
     async editReply(payload: string | InteractionReplyOptions | MessageCreateOptions | InteractionReplyOptions) {

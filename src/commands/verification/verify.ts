@@ -11,7 +11,7 @@ import noblox from 'noblox.js';
 class VerifyCommand extends Command {
     constructor() {
         super({
-            trigger: 'verify',
+            trigger: 'new',
             description: 'Verify your Roblox account by adding specific emojis to your Roblox description.',
             type: 'ChatInput',
             module: 'verification',

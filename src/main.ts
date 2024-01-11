@@ -3,7 +3,7 @@ import { handleInteraction } from './handlers/handleInteraction';
 import { handleLegacyCommand } from './handlers/handleLegacyCommand';
 import { config } from './config'; 
 import { Group } from 'bloxy/dist/structures';
-import { EmbedBuilder, TextChannel, VoiceChannel, ChannelType, ApplicationCommandData } from 'discord.js';
+import { EmbedBuilder, TextChannel, VoiceChannel, ChannelType, InteractionType } from 'discord.js';
 import connect from './database/connect';
 import { infoIconUrl, mainColor } from './handlers/locale';
 import { Client as RobloxClient } from 'bloxy';
@@ -145,6 +145,18 @@ let robloxGroup: Group = null;
     await robloxClient.login().catch(console.error);
     robloxGroup = await robloxClient.getGroup(config.groupId);
 })();
+
+// [Slash Commands]
+discordClient.on('interactionCreate', async interaction => {
+    if (interaction.type === InteractionType.ModalSubmit) {
+        if (interaction.customId === 'myModalCustomId') {
+            const userInput = interaction.fields.getTextInputValue('textInputCustomId');
+            // Process the input
+            await interaction.reply(`You entered: ${userInput}`);
+        }
+    }
+});
+
 
 // [Module]
 export { discordClient, robloxClient, robloxGroup };
