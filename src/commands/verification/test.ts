@@ -5,7 +5,6 @@ import { config } from '../../config';
 import { getLinkedRobloxUser } from '../../handlers/accountLinks';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, Interaction, ModalActionRowComponentBuilder, ChatInputCommandInteraction, TextChannel } from 'discord.js';
 import { greenColor, infoIconUrl, mainColor, redColor, xmarkIconUrl } from '../../handlers/locale';
-import { Modal } from 'discord-modals';
 import noblox from 'noblox.js';
 
 class NewVerifyCommand extends Command {
