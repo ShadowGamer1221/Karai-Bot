@@ -3,7 +3,7 @@ import { CommandContext } from '../../structures/addons/CommandAddons';
 import { Command } from '../../structures/Command';
 import { config } from '../../config';
 import { getLinkedRobloxUser } from '../../handlers/accountLinks';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, Interaction, ModalActionRowComponentBuilder, ChatInputCommandInteraction, TextChannel } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, Interaction, ModalActionRowComponentBuilder, ChatInputCommandInteraction, TextChannel, CommandInteraction } from 'discord.js';
 import { greenColor, infoIconUrl, mainColor, redColor, xmarkIconUrl } from '../../handlers/locale';
 import noblox from 'noblox.js';
 
@@ -21,21 +21,19 @@ class NewVerifyCommand extends Command {
     async run(ctx: CommandContext) {
 
         const textInput = new TextInputBuilder()
-        .setCustomId('textInputCustomId')
+        .setCustomId('test')
         .setLabel('Your Label Here')
-        .setStyle(TextInputStyle.Short);  // Or TextInputStyle.Paragraph
+        .setStyle(TextInputStyle.Short);
 
-    // Create a modal
     const modal = new ModalBuilder()
-        .setCustomId('myModalCustomId')
+        .setCustomId('test2')
         .setTitle('My Modal Title');
 
-    // Add the text input to the modal inside an ActionRow
     const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(textInput);
     modal.addComponents(actionRow);
 
-    // Show the modal using the context
-    await ctx.showModal(modal);
+    const interaction = ctx.subject as CommandInteraction;
+    interaction.showModal(modal);
 
     }
 }

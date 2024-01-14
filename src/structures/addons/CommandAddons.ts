@@ -7,14 +7,7 @@ import {
     GuildMember,
     BaseInteraction,
     MessageCreateOptions,
-    InteractionResponseType,
     TextChannel,
-    Routes,
-    isJSONEncodable,
-    ModalBuilder,
-    ActionRowBuilder,
-    ModalActionRowComponentBuilder,
-    TextInputBuilder,
 } from 'discord.js';
 import { Command } from '../Command';
 import { Args } from 'lexure';
@@ -121,6 +114,7 @@ export class CommandContext  {
      * @param payload
      */
     async reply(payload: string | InteractionReplyOptions | MessageCreateOptions | InteractionReplyOptions) {
+        console.log("Reply called")
         this.replied = true;
         if(this.subject instanceof CommandInteraction) {
             try {
@@ -145,15 +139,8 @@ export class CommandContext  {
         }
     }
 
-    async showModal(modal: ModalBuilder) {
-        if (!(this.subject instanceof CommandInteraction)) {
-            throw new Error('Can only show modal for command interactions');
-        }
-    
-        await this.subject.showModal(modal);
-    }
-
     async editReply(payload: string | InteractionReplyOptions | MessageCreateOptions | InteractionReplyOptions) {
+        console.log("Edit reply called")
         if(this.subject instanceof CommandInteraction) {
             try {
                 const subject = this.subject as CommandInteraction;
@@ -173,6 +160,7 @@ export class CommandContext  {
      * Defers a reply.
      */
     async defer() {
+        console.log("Defer called")
         try {
             if(this.subject instanceof CommandInteraction) {
                 const interaction = this.subject as CommandInteraction;

@@ -38,7 +38,6 @@ const handleLegacyCommand = async (message: Message) => {
         if(!context.checkPermissions()) {
             context.reply({ embeds: [ getNoPermissionEmbed() ] });
         } else {
-            await context.defer();
             try {
                 (new command()).run(context);
             } catch (err) {
