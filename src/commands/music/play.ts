@@ -58,29 +58,29 @@ class PlayCommand extends Command {
     let songInfo: Song;
 
     if (ytdl.validateURL(songArg)) {
-      const songDetails = await ytdl.getBasicInfo(songArg);
-      songInfo = {
-        title: songDetails.videoDetails.title,
-        url: songArg,
-        requester: ctx.member.user.tag
-      };
-    } else if (this.isSpotifyUrl(songArg)) {
-      const trackDetails = await this.getSpotifyTrackDetails(songArg);
-      if (!trackDetails) {
-        return ctx.reply('Could not find details for the provided Spotify track.');
+        // YouTube URL handling
+        const songDetails = await ytdl.getBasicInfo(songArg);
+        songInfo = {
+          title: songDetails.videoDetails.title,
+          url: songArg,
+          requester: ctx.member.user.tag
+        };
+      } else {
+        // Spotify search or direct song name search
+        const trackDetails = await this.searchSpotify(songArg) || await this.getSpotifyTrackDetails(songArg);
+        if (!trackDetails) {
+          return ctx.reply('Could not find the track on Spotify.');
+        }
+        const youtubeURL = await this.searchYouTube(`${trackDetails.name} ${trackDetails.artist}`);
+        if (!youtubeURL) {
+          return ctx.reply('Could not find a YouTube equivalent for the provided track.');
+        }
+        songInfo = {
+          title: `${trackDetails.name} by ${trackDetails.artist}`,
+          url: youtubeURL,
+          requester: ctx.member.user.id
+        };
       }
-      const youtubeURL = await this.searchYouTube(`${trackDetails.name} ${trackDetails.artist}`);
-      if (!youtubeURL) {
-        return ctx.reply('Could not find a YouTube equivalent for the provided Spotify track.');
-      }
-      songInfo = {
-        title: `${trackDetails.name} by ${trackDetails.artist}`,
-        url: youtubeURL,
-        requester: ctx.member.user.tag
-      };
-    } else {
-      return ctx.reply('Please provide a valid YouTube or Spotify URL.');
-    }
 
     const voiceChannel = ctx.member.voice.channel;
     if (!voiceChannel) {
@@ -120,6 +120,23 @@ try {
   console.error(error);
   queue.delete(ctx.guild.id);
   return ctx.reply('There was an error connecting to the voice channel.');
+}
+
+}
+
+async searchSpotify(query: string): Promise<{ name: string, artist: string } | null> {
+    try {
+      const data = await spotifyApi.clientCredentialsGrant();
+      spotifyApi.setAccessToken(data.body['access_token']);
+
+      const response = await spotifyApi.searchTracks(query, { limit: 1 });
+      const track = response.body.tracks.items[0];
+      if (!track) return null;
+
+  return { name: track.name, artist: track.artists[0].name };
+} catch (error) {
+  console.error('Error searching Spotify:', error);
+  return null;
 }
 
 }
@@ -192,7 +209,9 @@ serverQueue.player.on(AudioPlayerStatus.Idle, () => {
 
 serverQueue.player.on('error', error => console.error(error));
 
-serverQueue.textChannel.send(`Now playing: ${song.title} requested by <@${song.requester}>`);
+let ctx: CommandContext
+
+ctx.reply(`Now playing: ${song.title} requested by <@${song.requester}>`);
 
 }
 }
