@@ -19,6 +19,7 @@ class QbotClient extends Client {
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.GuildMessageReactions,
                 GatewayIntentBits.MessageContent,
+                GatewayIntentBits.GuildVoiceStates,
             ]
         });
         this.config = config;

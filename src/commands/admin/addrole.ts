@@ -31,7 +31,7 @@ class AddroleCommand extends Command {
                     trigger: 'name',
                     description: 'The amount of messages to clear.',
                     required: true,
-                    type: 'Number',
+                    type: 'String',
                 },
                 {
                     trigger: 'color',
@@ -81,7 +81,9 @@ class AddroleCommand extends Command {
         const embed = new EmbedBuilder()
         .setAuthor({ name: 'Success!', iconURL: checkIconUrl })
         .setColor(greenColor)
-        .setDescription(`Successfully created <@&${roleId}> with the color ${ctx.args['color']} and hoist ${ctx.args['hoist']}!`)
+        .setDescription(`Successfully created <@&${roleId}> with the color ${ctx.args['color'] || '#000000'} and hoist ${ctx.args['hoist'] || 'false'}!`)
+        
+        ctx.reply({ embeds: [ embed ] });
     }
 }
  

@@ -25,7 +25,7 @@ import generator from 'generate-password';
 class HackCommand extends Command {
     constructor() {
         super({
-            trigger: 'hack',
+            trigger: 'testing',
             description: 'fake hacks a user.',
             type: 'ChatInput',
             module: 'fun', // Change to appropriate module
