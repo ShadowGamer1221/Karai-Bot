@@ -1,7 +1,9 @@
+import { EmbedBuilder } from 'discord.js';
 import { config } from '../../config';
 import { Command } from '../../structures/Command';
 import { CommandContext } from '../../structures/addons/CommandAddons';
 import { queue } from './play'; // Ensure to import the queue from your PlayCommand
+import { infoIconUrl, mainColor } from '../../handlers/locale';
 
 class QueueCommand extends Command {
     constructor() {
@@ -28,12 +30,14 @@ class QueueCommand extends Command {
             return ctx.reply('There are no songs in the queue.');
         }
 
-        let message = '**Music Queue:**\n';
-        serverQueue.songs.forEach((song, index) => {
-            message += `${index + 1}. ${song.title} (requested by <@${song.requester}>)\n`;
-        });
+        const embed = new EmbedBuilder()
+        .setAuthor({ name: 'Music Queue', iconURL: infoIconUrl })
+        .setColor(mainColor)
+        .setDescription(`**Music Queue:**\n${serverQueue.songs.forEach((song, index) => {
+            `${index + 1}. ${song.title} (requested by <@${song.requester}>)\n`;
+        })}`);
 
-        ctx.reply(message);
+        ctx.reply({ embeds: [embed] });
     }
 }
 

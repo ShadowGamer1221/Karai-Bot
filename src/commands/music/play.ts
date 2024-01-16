@@ -2,9 +2,10 @@ import { Command } from '../../structures/Command';
 import { CommandContext } from '../../structures/addons/CommandAddons';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice';
 import ytdl from 'ytdl-core';
-import { GuildMember, Message } from 'discord.js';
+import { EmbedBuilder, GuildMember, Message } from 'discord.js';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { google } from 'googleapis';
+import { infoIconUrl, mainColor } from '../../handlers/locale';
 
 const youtube = google.youtube({
   version: 'v3',
@@ -209,9 +210,24 @@ serverQueue.player.on(AudioPlayerStatus.Idle, () => {
 
 serverQueue.player.on('error', error => console.error(error));
 
-let ctx: CommandContext
 
-ctx.reply(`Now playing: ${song.title} requested by <@${song.requester}>`);
+const embed = new EmbedBuilder()
+.setAuthor({ name: 'Starting Playing...', iconURL: infoIconUrl })
+.setColor(mainColor)
+.setDescription(`[${song.title}](${song.url})`)
+.setFields([
+    {
+        name: 'Title',
+        value: song.title, inline: true
+    },
+    {
+        name: 'Requested By',
+        value: `<@${song.requester}>`, inline: true
+    }
+    ]);
+
+serverQueue.textChannel.send({ embeds: [embed] });
+serverQueue.voiceChannel.send({ embeds: [embed] });
 
 }
 }

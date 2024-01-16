@@ -2,6 +2,8 @@ import { Command } from '../../structures/Command';
 import { CommandContext } from '../../structures/addons/CommandAddons';
 import { config } from '../../config';
 import { queue } from './play'; // Assuming this is where your queue is stored
+import { EmbedBuilder } from 'discord.js';
+import { infoIconUrl, mainColor } from '../../handlers/locale';
 
 class SkipCommand extends Command {
     constructor() {
@@ -34,7 +36,11 @@ class SkipCommand extends Command {
 
         // Skip the current song
         this.skipSong(ctx.guild.id);
-        ctx.reply('Skipped the current song!');
+        const skippedEmbed = new EmbedBuilder()
+        .setAuthor({ name: 'Skipped Song', iconURL: infoIconUrl })
+        .setDescription(`Skipped the current song!`)
+        .setColor(mainColor);
+        ctx.reply({ embeds: [skippedEmbed] });
     }
 
     skipSong(guildId: string) {
