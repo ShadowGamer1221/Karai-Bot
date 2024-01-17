@@ -9,6 +9,7 @@ import { ModalBuilder } from 'discord.js';
 import { TextInputStyle } from 'discord.js';
 import { ModalActionRowComponentBuilder } from 'discord.js';
 import { ActionRowBuilder } from 'discord.js';
+import { config } from '../../config';
 
 class GiveawayCommand extends Command {
     constructor() {
@@ -18,7 +19,13 @@ class GiveawayCommand extends Command {
             type: 'ChatInput',
             module: 'fun',
             args: [],
-            permissions: [] // Adjust permissions as needed
+            permissions: [
+                {
+                    type: 'role',
+                    ids: config.permissions.admin,
+                    value: true,
+                }
+            ] // Adjust permissions as needed
         });
     }
 
