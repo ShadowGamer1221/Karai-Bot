@@ -95,7 +95,8 @@ function getEmojiForCategory(category: string): string {
         trading: '💰 | ',
         music: '🎵 | ',
         verification: '🔒 | ',
-        fun: '🎉 | ',
+        giveaway: '🎉 | ',
+        fun: '🎲 | ',
 
         // Add more categories and emojis as needed
     };
