@@ -10,12 +10,12 @@ import { infoIconUrl, mainColor } from '../../handlers/locale';
 // Initialize YouTube and Spotify APIs
 const youtube = google.youtube({
   version: 'v3',
-  auth: 'AIzaSyDFHCQew_zlAD8-P4ax4U9JDWVdfBpeboA'
+  auth: process.env.YT_API
 });
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: '8fee832fe5eb42e0b418b598f7659565',
-  clientSecret: 'd05ef47e548e4163b2a7bb70446b3a71'
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET
 });
 
 interface Song {
