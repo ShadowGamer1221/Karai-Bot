@@ -192,7 +192,7 @@ if (!song) {
   return;
 }
 
-const stream = ytdl(song.url, { filter: 'audioonly' });
+const stream = ytdl(song.url, { filter: 'audioonly', quality: 'lowestaudio' });
 const resource = createAudioResource(stream);
 serverQueue.player.play(resource);
 

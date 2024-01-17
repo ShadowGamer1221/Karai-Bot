@@ -30,13 +30,15 @@ class QueueCommand extends Command {
             return ctx.reply('There are no songs in the queue.');
         }
 
+        const queueDescription = serverQueue.songs.map((song, index) => {
+            return `${index + 1}. ${song.title} (requested by <@${song.requester}>)`;
+        }).join('\n');
+    
         const embed = new EmbedBuilder()
-        .setAuthor({ name: 'Music Queue', iconURL: infoIconUrl })
-        .setColor(mainColor)
-        .setDescription(`**Music Queue:**\n${serverQueue.songs.forEach((song, index) => {
-            `${index + 1}. ${song.title} (requested by <@${song.requester}>)\n`;
-        })}`);
-
+            .setAuthor({ name: 'Music Queue', iconURL: infoIconUrl })
+            .setColor(mainColor)
+            .setDescription(queueDescription);
+    
         ctx.reply({ embeds: [embed] });
     }
 }
