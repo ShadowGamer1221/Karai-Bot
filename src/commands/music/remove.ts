@@ -1,3 +1,4 @@
+import { config } from '../../config';
 import { Command } from '../../structures/Command';
 import { CommandContext } from '../../structures/addons/CommandAddons';
 import { queue } from './play'; // Import the queue from your PlayCommand
@@ -17,7 +18,13 @@ class RemoveCommand extends Command {
                     required: true
                 }
             ],
-            permissions: [] // Set permissions as needed
+            permissions: [
+                {
+                    type: 'role',
+                    ids: config.permissions.verified,
+                    value: true,
+                },
+            ] // Set permissions as needed
         });
     }
 

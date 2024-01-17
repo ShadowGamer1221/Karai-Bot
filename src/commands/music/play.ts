@@ -22,7 +22,6 @@ interface Song {
   title: string;
   url: string;
   requester: string;
-  image?: string; // Optional image URL
 }
 
 interface QueueContract {
@@ -32,6 +31,8 @@ interface QueueContract {
   songs: Song[];
   player: ReturnType<typeof createAudioPlayer>;
   playing: boolean;
+  loopSong: boolean; // Indicates if the current song is set to loop
+  loopQueue: boolean; // Indicates if the entire queue is set to loop
 }
 
 const queue = new Map<string, QueueContract>();
@@ -80,7 +81,6 @@ if (!playlistSongs || playlistSongs.length === 0) {
             title: songDetails.videoDetails.title,
             url: songArg,
             requester: ctx.member.user.tag,
-            image: songDetails.videoDetails.thumbnails[songDetails.videoDetails.thumbnails.length - 1].url // Last thumbnail is usually the highest quality
         }];        
       } else {
         // Spotify search or direct song name search
@@ -114,7 +114,9 @@ if (!playlistSongs || playlistSongs.length === 0) {
         connection: null,
         songs: songsToAdd, // songsToAdd contains either playlist songs or a single song
         player: createAudioPlayer(),
-        playing: false
+        playing: false,
+        loopSong: false,
+        loopQueue: false
       };
 
       queue.set(ctx.guild.id, newQueueContract);
@@ -160,8 +162,7 @@ if (!playlistSongs || playlistSongs.length === 0) {
       .setFields([
           { name: 'Requested By', value: `<@${song.requester}>`, inline: true },
           { name: 'Title', value: song.title, inline: true }
-      ])
-      .setImage(song.image);
+      ]);
   
   queueContract.textChannel.send({ embeds: [embed] });  
     } else {
@@ -188,8 +189,7 @@ if (!playlistSongs || playlistSongs.length === 0) {
             .setFields([
                 { name: 'Requested By', value: `<@${song.requester}>`, inline: true },
                 { name: 'Title', value: song.title, inline: true }
-            ])
-            .setImage(song.image); // Set the image of the song
+            ]);
         
         queueContract.textChannel.send({ embeds: [embed] });        
           } else {
@@ -228,7 +228,7 @@ isSpotifyUrl(url: string): boolean {
 return url.includes('spotify.com/track/');
 }
 
-async getSpotifyTrackDetails(url: string): Promise<{ name: string, artist: string, image: string } | null> {
+async getSpotifyTrackDetails(url: string): Promise<{ name: string, artist: string } | null> {
     const matches = url.match(/track\/([a-zA-Z0-9]+)/);
     if (!matches) return null;
     const trackId = matches[1];
@@ -242,7 +242,6 @@ async getSpotifyTrackDetails(url: string): Promise<{ name: string, artist: strin
       return {
           name: track.name,
           artist: track.artists[0].name,
-          image: track.album.images[0].url // First image is usually the highest quality
       };      
     } catch (error) {
       console.error('Error fetching Spotify track details:', error);
@@ -296,7 +295,6 @@ async getSpotifyTrackDetails(url: string): Promise<{ name: string, artist: strin
             title: item.snippet.title,
             url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
             requester: 'YouTube Playlist',
-            image: item.snippet.thumbnails.default.url
           };
           songs.push(song);
         }
@@ -340,7 +338,6 @@ extractSpotifyPlaylistId(url: string): string | null {
             title: `${track.name} by ${track.artists.map(artist => artist.name).join(', ')}`,
             url: track.external_urls.spotify, // Placeholder, find YouTube equivalent for playback
             requester: 'Spotify Playlist',
-            image: track.album.images[0].url // First image is usually the highest quality
           });
         }
   

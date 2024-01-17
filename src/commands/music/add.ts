@@ -1,14 +1,13 @@
 import { Command } from '../../structures/Command';
 import { CommandContext } from '../../structures/addons/CommandAddons';
-import { queue } from './play'; // Make sure to import the queue and necessary helper methods from PlayCommand
-import { Song } from './play'; // Adjust this import according to your project structure
-import { google } from 'googleapis';
+import { queue } from './play'; // Import the queue from your PlayCommand
+import ytdl from 'ytdl-core';
 import SpotifyWebApi from 'spotify-web-api-node';
+import { google } from 'googleapis';
 
-// Initialize YouTube and Spotify APIs
 const youtube = google.youtube({
     version: 'v3',
-    auth: 'AIzaSyA5voxM5zJoUggTyE4gr4fPNtmjMshuMh0'
+    auth: 'AIzaSyDakPFQh1ibLiV8csW-OF2XXdLY9xNKUJ0'
   });
   
   const spotifyApi = new SpotifyWebApi({
@@ -20,13 +19,13 @@ class AddCommand extends Command {
   constructor() {
     super({
       trigger: 'add',
-      description: 'Adds a song or a playlist to the queue.',
+      description: 'Adds a song to the queue.',
       type: 'ChatInput',
       module: 'music',
       args: [
         {
           trigger: 'song',
-          description: 'The Spotify URL, YouTube URL, or name of the song or playlist to add.',
+          description: 'The Spotify URL, YouTube URL, or name of the song to add.',
           type: 'String',
           required: true
         }
@@ -36,31 +35,47 @@ class AddCommand extends Command {
   }
 
   async run(ctx: CommandContext) {
-    const playlistArg = ctx.args['song'];
-    let songsToAdd: Song[] = [];
+    const songArg = ctx.args['song'];
+    let songInfo;
 
-    if (this.isYoutubePlaylistUrl(playlistArg)) {
-      const playlistId = this.extractYoutubePlaylistId(playlistArg);
-      songsToAdd = await this.fetchYoutubePlaylistSongs(playlistId);
-    } else if (this.isSpotifyPlaylistUrl(playlistArg)) {
-      const playlistId = this.extractSpotifyPlaylistId(playlistArg);
-      songsToAdd = await this.fetchSpotifyPlaylistSongs(playlistId);
-    } else {
-      // Handle individual song (existing single song logic)
-      // ...
-    }
+    if (ytdl.validateURL(songArg)) {
+        // YouTube URL handling
+        const songDetails = await ytdl.getBasicInfo(songArg);
+        songInfo = {
+          title: songDetails.videoDetails.title,
+          url: songArg,
+          requester: ctx.member.user.tag
+        };
+      } else {
+        // Spotify search or direct song name search
+        const trackDetails = await this.searchSpotify(songArg) || await this.getSpotifyTrackDetails(songArg);
+        if (!trackDetails) {
+          return ctx.reply('Could not find the track on Spotify.');
+        }
+        const youtubeURL = await this.searchYouTube(`${trackDetails.name} ${trackDetails.artist}`);
+        if (!youtubeURL) {
+          return ctx.reply('Could not find a YouTube equivalent for the provided track.');
+        }
+        songInfo = {
+          title: `${trackDetails.name} by ${trackDetails.artist}`,
+          url: youtubeURL,
+          requester: ctx.member.user.id
+        };
+      }
 
     const serverQueue = queue.get(ctx.guild.id);
-    if (!serverQueue) {
-      // Handle the case where there is no active queue
-      // You might want to inform the user or start a new queue
+
+    if (serverQueue) {
+      serverQueue.songs.push(songInfo);
+      ctx.reply(`${songInfo.title} has been added to the queue.`);
     } else {
-      songsToAdd.forEach(song => serverQueue.songs.push(song));
-      ctx.reply(`${songsToAdd.length} song(s) have been added to the queue.`);
+      // If there is no music currently playing, you can choose to start playing
+      // Or just inform the user that there's no active queue
+      ctx.reply('There is no music currently playing. Use the play command to start playing music.');
     }
   }
 
-  async searchSpotify(query: string): Promise<{ name: string, artist: string } | null> {
+async searchSpotify(query: string): Promise<{ name: string, artist: string } | null> {
     try {
       const data = await spotifyApi.clientCredentialsGrant();
       spotifyApi.setAccessToken(data.body['access_token']);
@@ -114,92 +129,6 @@ async getSpotifyTrackDetails(url: string): Promise<{ name: string, artist: strin
       console.error('Error searching on YouTube:', error);
       return null;
     }
-  }
-
-  isYoutubePlaylistUrl(url: string): boolean {
-    const youtubePlaylistRegex = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
-    return youtubePlaylistRegex.test(url);
-  }
-  
-  extractYoutubePlaylistId(url: string): string | null {
-    const match = url.match(/list=([^#\&\?]+)/);
-    return match ? match[1] : null;
-  }
-
-  async fetchYoutubePlaylistSongs(playlistId: string): Promise<Song[]> {
-    const songs: Song[] = [];
-    let pageToken = '';
-  
-    try {
-      do {
-        const response = await youtube.playlistItems.list({
-          part: ['snippet'],
-          playlistId: playlistId,
-          maxResults: 50,
-          pageToken: pageToken
-        });
-  
-        for (const item of response.data.items) {
-          const song: Song = {
-            title: item.snippet.title,
-            url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
-            requester: 'YouTube Playlist',
-            image: item.snippet.thumbnails.default.url
-          };
-          songs.push(song);
-        }
-  
-        pageToken = response.data.nextPageToken || '';
-      } while (pageToken);
-    } catch (error) {
-      console.error('Error fetching YouTube playlist:', error);
-    }
-  
-    return songs;
-  }  
-
-  isSpotifyPlaylistUrl(url: string): boolean {
-    const spotifyPlaylistRegex = /https?:\/\/(?:www\.)?spotify\.com\/(?:user\/\w+\/)?playlist\/(\w+)/;
-    return spotifyPlaylistRegex.test(url);
-  }
-  
-  extractSpotifyPlaylistId(url: string): string | null {
-    const match = url.match(/playlist\/(\w+)/);
-    return match ? match[1] : null;
-  }
-
-  async fetchSpotifyPlaylistSongs(playlistId: string): Promise<Song[]> {
-    const songs: Song[] = [];
-    let offset = 0;
-  
-    try {
-      const data = await spotifyApi.clientCredentialsGrant();
-      spotifyApi.setAccessToken(data.body['access_token']);
-  
-      while (true) {
-        const response = await spotifyApi.getPlaylistTracks(playlistId, {
-          limit: 100,
-          offset: offset
-        });
-  
-        for (const item of response.body.items) {
-          const track = item.track;
-          songs.push({
-            title: `${track.name} by ${track.artists.map(artist => artist.name).join(', ')}`,
-            url: track.external_urls.spotify, // Placeholder, find YouTube equivalent for playback
-            requester: 'Spotify Playlist',
-            image: track.album.images[0].url
-          });
-        }
-  
-        if (response.body.items.length === 0) break;
-        offset += response.body.items.length;
-      }
-    } catch (error) {
-      console.error('Error fetching Spotify playlist:', error);
-    }
-  
-    return songs;
   }
 }
 
