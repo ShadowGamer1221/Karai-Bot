@@ -7,7 +7,7 @@ import { google } from 'googleapis';
 
 const youtube = google.youtube({
     version: 'v3',
-    auth: 'AIzaSyDakPFQh1ibLiV8csW-OF2XXdLY9xNKUJ0'
+    auth: 'AIzaSyDFHCQew_zlAD8-P4ax4U9JDWVdfBpeboA'
   });
   
   const spotifyApi = new SpotifyWebApi({
@@ -37,6 +37,7 @@ class AddCommand extends Command {
   async run(ctx: CommandContext) {
     const songArg = ctx.args['song'];
     let songInfo;
+
 
     if (ytdl.validateURL(songArg)) {
         // YouTube URL handling
