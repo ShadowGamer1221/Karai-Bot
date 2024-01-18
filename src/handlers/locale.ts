@@ -23,12 +23,12 @@ export const consoleClear = '\x1b[0m';
 
 export const qbotLaunchTextDisplay = `${consoleMagenta}${textSync('Karai')}`;
 export const welcomeText = `${consoleYellow} Bot started successfully!`;
-export const startedText = `\n${consoleGreen}✓  ${consoleClear}Your bot has been started.`;
-export const securityText = `\n${consoleRed}⚠  ${consoleClear}URGENT: For security reasons, public bot must be DISABLED for the bot to start.`;
+export const startedText = `\n${consoleGreen}✔️  ${consoleClear}Your bot has been started.`;
+export const securityText = `\n${consoleRed}⚠️  ${consoleClear}URGENT: For security reasons, public bot must be DISABLED for the bot to start.`;
 
 export const noFiredRankLog = `Uh oh, you do not have a fired rank with the rank specified in your configuration file.`;
 export const noSuspendedRankLog = `Uh oh, you do not have a suspended rank with the rank specified in your configuration file.`;
-export const getListeningText = (port) => `${consoleGreen}✓  ${consoleClear}Listening on port ${port}.`;
+export const getListeningText = (port) => `${consoleGreen}✔️  ${consoleClear}Listening on port ${port}.`;
 
 
 export const getUnknownCommandMessage = (): EmbedBuilder => {
